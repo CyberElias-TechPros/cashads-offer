@@ -60,7 +60,7 @@ jobs:
           npm run db:seed 2>&1 | tee seed.log
       - name: Surface seed errors as annotations
         if: failure()
-        run: tail -n 12 seed.log | while IFS= read -r line; do echo "::error title=db:seed::${line}"; done
+        run: grep -vE '^npm (error|ERR)|^\s+at |^Node\.js|^\s*$' seed.log | tail -n 9 | while IFS= read -r line; do echo "::error title=db:seed::${line}"; done
       - name: Boot the production build and smoke-test it
         run: |
           cd apps/api
