@@ -1,0 +1,20 @@
+name = "lucrum-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-05"
+
+[vars]
+FRONTEND_ORIGIN = "http://localhost:5173"
+SANDBOX_MODE = "true"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lucrum-production"
+database_id = "REPLACE_WITH_CLOUDFLARE_DATABASE_ID"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "lucrum-uploads"
+
+[triggers]
+crons = ["*/5 * * * *"]
