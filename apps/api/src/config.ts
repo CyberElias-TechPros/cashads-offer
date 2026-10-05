@@ -41,9 +41,9 @@ const schema = z.object({
   COOKIE_SECURE: bool(isProd),
   METRICS_TOKEN: z.string().optional(),
   API_DOCS: bool(!isProd),
-  ADMIN_EMAIL: z.string().default('admin@cashads.local'),
+  ADMIN_EMAIL: z.string().default('admin@lucrum.local'),
   ADMIN_PASSWORD: z.string().default('Admin-demo-2026'),
-  DEMO_EMAIL: z.string().default('demo@cashads.local'),
+  DEMO_EMAIL: z.string().default('demo@lucrum.local'),
   DEMO_PASSWORD: z.string().default('Demo-earner-2026'),
   /** Optional real payout provider — enables the Paystack adapter for NG bank payouts. */
   PAYSTACK_SECRET_KEY: z.string().optional(),

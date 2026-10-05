@@ -7,7 +7,7 @@ import {
   type TaxSummaryDTO,
   formatUsd,
   us1099ThresholdMicros,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import { charities, donations, kycSubmissions, users } from '../../db/schema';
 import type { UserRow } from '../../http/auth';

@@ -1,5 +1,5 @@
 import { and, desc, eq, gt, inArray, sql } from 'drizzle-orm';
-import { type AdEventType, type AdNextDTO, type AdSessionDTO, splitByBps } from '@cashads/shared';
+import { type AdEventType, type AdNextDTO, type AdSessionDTO, splitByBps } from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';
 import { adCreatives, adSessions, earningLocks, networks } from '../../db/schema';

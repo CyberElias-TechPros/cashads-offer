@@ -10,7 +10,7 @@ export * from './content/polls';
 export * from './content/legal';
 
 export const BRAND = {
-  name: 'CashAds',
+  name: 'Lucrum',
   tagline: 'Real cash for your spare minutes. No points. No minimum.',
   pitch:
     'The rewards app that pays you real money, instantly, with no minimum and no points — and pays you even when tracking fails.',

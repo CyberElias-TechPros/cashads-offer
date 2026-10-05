@@ -8,7 +8,7 @@ import {
   formatLocal,
   formatUsd,
   type FormatOptions,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { useUI } from '../store/ui';
 import { get } from './api';
 

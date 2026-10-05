@@ -117,12 +117,12 @@ export async function completeSandboxClick(
     mode,
     message:
       mode === 'drop'
-        ? 'The network recorded your completion but its postback was “lost” — CashAds won’t hear about it. Try Missing Credit after the wait period.'
+        ? 'The network recorded your completion but its postback was “lost” — Lucrum won’t hear about it. Try Missing Credit after the wait period.'
         : mode === 'bad_signature'
-          ? 'A postback with a corrupted signature is on its way — CashAds will reject it as untrusted.'
+          ? 'A postback with a corrupted signature is on its way — Lucrum will reject it as untrusted.'
           : mode === 'duplicate'
-            ? 'The network will send the same postback twice — CashAds will credit it once.'
-            : 'Completion recorded. The network is notifying CashAds now…',
+            ? 'The network will send the same postback twice — Lucrum will credit it once.'
+            : 'Completion recorded. The network is notifying Lucrum now…',
   };
 }
 

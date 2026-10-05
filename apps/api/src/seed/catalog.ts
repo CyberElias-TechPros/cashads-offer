@@ -1,4 +1,4 @@
-import { usd } from '@cashads/shared';
+import { usd } from '@lucrum/shared';
 
 /**
  * Sandbox catalogue. Every advertiser here is fictional and labelled "(sandbox)"

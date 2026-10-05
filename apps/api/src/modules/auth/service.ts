@@ -9,7 +9,7 @@ import {
   type SessionDTO,
   TERMS_VERSION,
   getCountry,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';
 import { loginEvents, sessions, users, verificationTokens } from '../../db/schema';
@@ -91,7 +91,7 @@ export async function register(
     await issueEmailVerification(tx, created, baseUrl);
     await notify(ctx, tx, created.id, {
       type: 'welcome',
-      title: 'Welcome to CashAds 👋',
+      title: 'Welcome to Lucrum 👋',
       body: 'Real money, no points, no minimum. Start with a 20-second quick task — you can cash out right after.',
       link: '/app/earn/quick',
     });
@@ -112,7 +112,7 @@ export async function issueEmailVerification(db: DbOrTx, user: UserRow, baseUrl:
   await sendEmail(db, {
     userId: user.id,
     to: user.email,
-    subject: 'Confirm your email for CashAds',
+    subject: 'Confirm your email for Lucrum',
     body: `Confirm your email to enable cash-outs:\n\n${link}\n\nThis link expires in 48 hours. If you didn't sign up, ignore this email.`,
     meta: { link, kind: 'email_verify' },
   });
@@ -246,7 +246,7 @@ export async function completeLogin(
         title: 'New sign-in',
         body: `Signed in on ${client.label} (${client.ip}). If this wasn’t you, sign out that device and change your password.`,
         link: '/app/profile?tab=security',
-        email: { category: 'security', subject: 'New sign-in to your CashAds account' },
+        email: { category: 'security', subject: 'New sign-in to your Lucrum account' },
       });
     }
     return user;
@@ -321,7 +321,7 @@ export async function forgotPassword(ctx: AppContext, email: string, baseUrl: st
   await sendEmail(ctx.db, {
     userId: user.id,
     to: user.email,
-    subject: 'Reset your CashAds password',
+    subject: 'Reset your Lucrum password',
     body: `Reset your password using this link (valid for 1 hour):\n\n${link}\n\nIf you didn't request this, you can ignore this email — your password won't change.`,
     meta: { link, kind: 'password_reset' },
   });
@@ -558,7 +558,7 @@ export async function startPhoneVerification(
   await sendSms(ctx.db, {
     userId: user.id,
     to: phone,
-    body: `Your CashAds code is ${code}. It expires in 10 minutes. Never share it with anyone.`,
+    body: `Your Lucrum code is ${code}. It expires in 10 minutes. Never share it with anyone.`,
   });
   return { maskedPhone: `${phone.slice(0, 4)}••••${phone.slice(-3)}` };
 }

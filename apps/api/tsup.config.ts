@@ -10,5 +10,5 @@ export default defineConfig({
   sourcemap: true,
   splitting: true,
   // Bundle the workspace package; keep real npm dependencies external.
-  noExternal: ['@cashads/shared'],
+  noExternal: ['@lucrum/shared'],
 });

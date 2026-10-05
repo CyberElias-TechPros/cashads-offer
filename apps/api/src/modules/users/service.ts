@@ -8,7 +8,7 @@ import {
   getCountry,
   updatePrefsSchema,
   updateProfileSchema,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { z } from 'zod';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';

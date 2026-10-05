@@ -1,5 +1,5 @@
 import { and, desc, eq, sql } from 'drizzle-orm';
-import { type ReferralDTO, formatUsd } from '@cashads/shared';
+import { type ReferralDTO, formatUsd } from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';
 import { devices, ledgerEntries, ledgerTransactions, referrals, users } from '../../db/schema';
@@ -12,7 +12,7 @@ import { SYS, postTransaction, userAccountCode } from '../wallet/ledger';
 /**
  * Two-sided referrals (spec §14.4): both people get a bonus once the friend completes
  * their first task, plus the referrer earns a residual % of the friend's task earnings
- * forever (pain point #13). Residuals are paid from CashAds' share — never deducted
+ * forever (pain point #13). Residuals are paid from Lucrum' share — never deducted
  * from the friend.
  */
 
@@ -118,7 +118,7 @@ export async function onRefereeEarning(
         type: 'referral_residual',
         userId: referrer.id,
         idempotencyKey: `referral_residual:${sourceKey}`,
-        description: 'Referral earnings — 10% of your friend’s task, paid by CashAds',
+        description: 'Referral earnings — 10% of your friend’s task, paid by Lucrum',
         referenceType: 'referral',
         referenceId: ref.id,
         entries: [

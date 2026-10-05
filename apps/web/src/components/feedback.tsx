@@ -1,6 +1,6 @@
 import { CircleCheck, CircleX, Info, Sparkles, X } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
-import { formatUsd } from '@cashads/shared';
+import { formatUsd } from '@lucrum/shared';
 import { useMe } from '../lib/queries';
 import { cn } from '../lib/utils';
 import { useUI } from '../store/ui';

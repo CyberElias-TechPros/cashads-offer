@@ -28,7 +28,7 @@ import {
   type PayoutDTO,
   formatUsd,
   parseDollarInput,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { PayoutStatusBadge } from '../../components/earn';
 import {
   Badge,
@@ -980,7 +980,7 @@ export function AdminSettings() {
           label={f.label}
           value={String(v)}
           onChange={(e) => set(f.key, e.target.value)}
-          hint="Absorb = CashAds eats legitimate reversals (recommended)."
+          hint="Absorb = Lucrum eats legitimate reversals (recommended)."
         >
           <option value="absorb">Absorb (member keeps the money)</option>
           <option value="clawback">Claw back from member</option>

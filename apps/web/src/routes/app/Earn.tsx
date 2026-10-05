@@ -28,7 +28,7 @@ import {
   type OfferStartDTO,
   PAY_SPEEDS,
   formatUsd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { Money } from '../../components/brand';
 import {
   ClickStatusBadge,

@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { DEFAULT_FX_RATES, type Settings, settingsSchema, usd } from '@cashads/shared';
+import { DEFAULT_FX_RATES, type Settings, settingsSchema, usd } from '@lucrum/shared';
 import type { DB } from '../../db/client';
 import { settings as settingsTable } from '../../db/schema';
 

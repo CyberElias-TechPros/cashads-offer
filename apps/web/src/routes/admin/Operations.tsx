@@ -18,7 +18,7 @@ import {
   type PayoutDTO,
   type TicketDTO,
   formatUsd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { PayoutStatusBadge } from '../../components/earn';
 import {
   Badge,

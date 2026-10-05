@@ -1,5 +1,5 @@
 /**
- * Money is NEVER a float in CashAds.
+ * Money is NEVER a float in Lucrum.
  *
  * Every amount is an integer number of **micro-dollars** (1 USD = 1,000,000 micros).
  * Rewarded-video ads pay fractions of a cent, so cents are too coarse; micros keep

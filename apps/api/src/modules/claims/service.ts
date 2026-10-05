@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
-import { type ClaimDTO, formatUsd, getTier } from '@cashads/shared';
+import { type ClaimDTO, formatUsd, getTier } from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';
 import { claimEvents, claims, networks, offerClicks, offers, postbackLogs, users } from '../../db/schema';
@@ -19,7 +19,7 @@ import { creditConversion, creditGoodwill, userPayoutFor } from '../rewards/serv
  *   1. Our own postback logs — did the network tell us and something failed on our side?
  *   2. The network's conversion API — ask them directly using our click id.
  *   3. Goodwill — trusted members (tier limit, fraud score low, monthly cap) are paid
- *      instantly from CashAds' budget; we chase the network afterwards.
+ *      instantly from Lucrum' budget; we chase the network afterwards.
  *   4. A human, with a visible SLA. If we miss the SLA, small claims auto-approve.
  */
 
@@ -87,7 +87,7 @@ export async function createClaim(
       claim!.id,
       'submitted',
       opts.autoFiled
-        ? 'Filed automatically by CashAds after 72 hours without confirmation.'
+        ? 'Filed automatically by Lucrum after 72 hours without confirmation.'
         : 'Claim received. Checking automatically now…',
     );
     await ctx.jobs.enqueue(tx, 'claim.autoresolve', { claimId: claim!.id });

@@ -11,7 +11,7 @@ import {
   formatLocal,
   formatUsd,
   parseDollarInput,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { PhoneVerifyModal } from '../../components/verify';
 import {
   Badge,
@@ -149,7 +149,7 @@ export function Cashout() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
-      <PageHeader title="Cash out" subtitle="No CashAds minimum. You see every fee before you confirm." />
+      <PageHeader title="Cash out" subtitle="No Lucrum minimum. You see every fee before you confirm." />
       <Card className="flex flex-wrap items-center justify-between gap-3 bg-slate-900 text-white dark:bg-slate-900">
         <div>
           <p className="text-sm text-slate-400">Available</p>

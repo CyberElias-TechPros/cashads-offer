@@ -126,7 +126,7 @@ export const integrationRoutes: FastifyPluginAsyncZod = async (app) => {
         return reply.status(401).send();
       const event = req.body as { event?: string; data?: { reference?: string; reason?: string } };
       const reference = event.data?.reference ?? '';
-      const payoutId = reference.startsWith('cashads_') ? reference.slice(8) : null;
+      const payoutId = reference.startsWith('lucrum_') ? reference.slice(8) : null;
       if (payoutId) {
         const p = (await ctx.db.select().from(payouts).where(eq(payouts.id, payoutId)))[0];
         if (p && p.status === 'processing') {

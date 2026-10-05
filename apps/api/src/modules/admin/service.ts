@@ -6,9 +6,9 @@ import {
   FRAUD_SIGNAL_LABELS,
   type Role,
   formatUsd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { z } from 'zod';
-import type { adminOfferUpsertSchema } from '@cashads/shared';
+import type { adminOfferUpsertSchema } from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import {
   adminNotes,
@@ -388,7 +388,7 @@ export async function banUser(
       title: `Account restricted: ${BAN_REASONS[reasonCode].title}`,
       body: `${BAN_REASONS[reasonCode].explanation} ${message} You can appeal from your dashboard — a person will review it within 72 hours.`,
       link: '/app/restricted',
-      email: { category: 'security', subject: 'Your CashAds account has been restricted' },
+      email: { category: 'security', subject: 'Your Lucrum account has been restricted' },
     });
   });
 }

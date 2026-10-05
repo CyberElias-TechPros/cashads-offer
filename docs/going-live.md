@@ -29,7 +29,7 @@ METRICS_TOKEN=<random>
 - The server **refuses to boot** if `DATA_ENCRYPTION_KEY` doesn’t match the key that encrypted the database
   (encryption canary). Keep the key in a secret manager with access logging.
 - Put the app behind HTTPS (cookies are `Secure` in production). Point uptime checks at `/api/ready` and Prometheus at
-  `/api/metrics` (`Authorization: Bearer <METRICS_TOKEN>`). Alert on `cashads_ledger_balanced != 1`, failed jobs and
+  `/api/metrics` (`Authorization: Bearer <METRICS_TOKEN>`). Alert on `lucrum_ledger_balanced != 1`, failed jobs and
   postback failure rate.
 - Create the first admin, enable 2FA for every staff account, and remove demo users if you started from a demo DB.
 

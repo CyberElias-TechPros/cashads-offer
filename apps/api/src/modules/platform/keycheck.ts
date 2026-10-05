@@ -4,7 +4,7 @@ import { settings } from '../../db/schema';
 import { decrypt, encrypt } from '../../lib/crypto';
 
 const KEY = 'encryption_canary';
-const PLAINTEXT = 'cashads-encryption-canary-v1';
+const PLAINTEXT = 'lucrum-encryption-canary-v1';
 
 /**
  * Fail fast if DATA_ENCRYPTION_KEY doesn't match the key that encrypted existing data.

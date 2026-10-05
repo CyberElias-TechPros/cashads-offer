@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm';
-import { type OfferDTO, type PlanDTO, formatUsd } from '@cashads/shared';
+import { type OfferDTO, type PlanDTO, formatUsd } from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';
 import { dailyPlans, users } from '../../db/schema';

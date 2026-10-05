@@ -149,7 +149,7 @@ export async function buildApp(
     await app.register(swagger, {
       openapi: {
         info: {
-          title: 'CashAds API',
+          title: 'Lucrum API',
           version: '0.1.0',
           description:
             'Trust-first rewards wallet API. Money amounts are integer micro-dollars (1 USD = 1,000,000).',
@@ -168,7 +168,7 @@ export async function buildApp(
   app.addHook('onRequest', async (req) => {
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return;
     if (!req.url.startsWith('/api/') || CSRF_EXEMPT.some((r) => r.test(req.url))) return;
-    if (req.headers['x-requested-with'] !== 'cashads') {
+    if (req.headers['x-requested-with'] !== 'lucrum') {
       throw new AppError(403, 'CSRF', 'Missing request header. Please reload the page and try again.');
     }
   });
@@ -186,7 +186,7 @@ export async function buildApp(
     throw new AppError(
       503,
       'MAINTENANCE',
-      'CashAds is in a short maintenance window. Your balance is safe — please try again in a few minutes.',
+      'Lucrum is in a short maintenance window. Your balance is safe — please try again in a few minutes.',
     );
   });
 

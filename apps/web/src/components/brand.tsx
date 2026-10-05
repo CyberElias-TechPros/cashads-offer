@@ -34,7 +34,7 @@ export function Logo({ to = '/', className }: { to?: string; className?: string 
         'flex items-center gap-2 font-bold tracking-tight text-slate-900 dark:text-white',
         className,
       )}
-      aria-label="CashAds home"
+      aria-label="Lucrum home"
     >
       <LogoMark />
       <span className="text-lg">

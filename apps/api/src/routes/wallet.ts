@@ -8,7 +8,7 @@ import {
   paginationQuery,
   payoutCreateSchema,
   payoutQuoteSchema,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { and, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { donations, payouts } from '../db/schema';
@@ -113,7 +113,7 @@ export const walletRoutes: FastifyPluginAsyncZod = async (app) => {
       }
       return csvReply(
         reply,
-        `cashads-transactions-${new Date().toISOString().slice(0, 10)}.csv`,
+        `lucrum-transactions-${new Date().toISOString().slice(0, 10)}.csv`,
         `${rows.join('\n')}\n`,
       );
     },

@@ -1,11 +1,11 @@
 # Architecture
 
-CashAds is a **modular monolith**: one deployable (Fastify API that also serves the built web app), one PostgreSQL
+Lucrum is a **modular monolith**: one deployable (Fastify API that also serves the built web app), one PostgreSQL
 database, and a Postgres-backed job queue. Each domain lives in its own module with explicit service functions, so
 any module can be extracted into a service later without changing callers (see [ADR 0001](adr/0001-modular-monolith.md)).
 
 ```
-cashads-offer/
+lucrum-offer/
 ├── packages/shared/          # contracts used by API and web
 │   └── src/
 │       ├── money.ts          # integer micro-dollar math, fees, formatting
@@ -178,7 +178,7 @@ horizontally, back the bus with Postgres `LISTEN/NOTIFY` or Redis pub/sub — th
 
 - **Sessions:** 32-byte random tokens, stored hashed, httpOnly + SameSite=Lax cookies, sliding 30-day expiry,
   device-labelled, revocable (remote sign-out, password reset revokes all).
-- **CSRF:** mutations require the `x-requested-with: cashads` header (cannot be sent cross-site without CORS approval).
+- **CSRF:** mutations require the `x-requested-with: lucrum` header (cannot be sent cross-site without CORS approval).
 - **Passwords:** argon2id (OWASP parameters); constant-time path for unknown accounts; lockout after 8 failures / 15 min.
 - **2FA:** RFC 6238 TOTP with ±1 step drift, replay protection and hashed single-use recovery codes; step-up on payouts.
 - **PII at rest:** AES-256-GCM (phone, payout details, KYC numbers, TOTP secrets, network secrets) + HMAC blind indexes

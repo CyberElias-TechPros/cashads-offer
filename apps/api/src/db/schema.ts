@@ -17,7 +17,7 @@ import {
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
-import type { KycStatus, Role, UserPrefs, UserStatus } from '@cashads/shared';
+import type { KycStatus, Role, UserPrefs, UserStatus } from '@lucrum/shared';
 
 /* helpers */
 const ts = (name: string) => timestamp(name, { withTimezone: true, mode: 'date' });

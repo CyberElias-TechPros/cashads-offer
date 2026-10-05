@@ -1,6 +1,6 @@
 {
-  "name": "CashAds — real cash for your spare minutes",
-  "short_name": "CashAds",
+  "name": "Lucrum — real cash for your spare minutes",
+  "short_name": "Lucrum",
   "description": "Real cash, no points, no minimum. Paid even when tracking fails.",
   "start_url": "/app",
   "scope": "/",

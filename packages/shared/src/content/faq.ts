@@ -19,14 +19,14 @@ export const FAQ: FaqItem[] = [
   {
     id: 'what-is',
     category: 'start',
-    q: 'What is CashAds?',
-    a: 'CashAds pays you real money for short tasks from brands that want your attention — surveys, app trials, sign-ups, quick polls, lessons and short videos. Brands pay us when you complete a task; we pass a published share of that money to you and you can cash out from $0.01.',
+    q: 'What is Lucrum?',
+    a: 'Lucrum pays you real money for short tasks from brands that want your attention — surveys, app trials, sign-ups, quick polls, lessons and short videos. Brands pay us when you complete a task; we pass a published share of that money to you and you can cash out from $0.01.',
   },
   {
     id: 'cost',
     category: 'start',
     q: 'Does it cost anything?',
-    a: 'No. CashAds is free. We never ask you to pay to unlock earnings, withdrawals or “VIP” levels. If anyone asks you to pay to withdraw, it is not us.',
+    a: 'No. Lucrum is free. We never ask you to pay to unlock earnings, withdrawals or “VIP” levels. If anyone asks you to pay to withdraw, it is not us.',
   },
   {
     id: 'who',
@@ -38,7 +38,7 @@ export const FAQ: FaqItem[] = [
     id: 'points',
     category: 'earning',
     q: 'Why don’t you use points or coins?',
-    a: 'Points hide how little many apps pay. Every amount in CashAds — every task, bonus and balance — is shown in real money (dollars, plus your local currency). No conversion tables, no mental maths.',
+    a: 'Points hide how little many apps pay. Every amount in Lucrum — every task, bonus and balance — is shown in real money (dollars, plus your local currency). No conversion tables, no mental maths.',
   },
   {
     id: 'hourly',
@@ -67,7 +67,7 @@ export const FAQ: FaqItem[] = [
   {
     id: 'data-saver',
     category: 'earning',
-    q: 'Does CashAds work on slow connections?',
+    q: 'Does Lucrum work on slow connections?',
     a: 'Yes. Turn on Data-saver in your profile (or your browser’s data-saver) and we hide heavy offers, skip images and show the estimated data each task uses.',
   },
   {
@@ -92,13 +92,13 @@ export const FAQ: FaqItem[] = [
     id: 'reversal',
     category: 'missing',
     q: 'Can my earnings be taken back?',
-    a: 'Sometimes an advertiser reverses a completion days later. Unless the completion was fraudulent, CashAds absorbs that loss — your balance is not touched.',
+    a: 'Sometimes an advertiser reverses a completion days later. Unless the completion was fraudulent, Lucrum absorbs that loss — your balance is not touched.',
   },
   {
     id: 'minimum',
     category: 'payouts',
     q: 'Is there a minimum cash-out?',
-    a: 'No CashAds minimum. You can cash out $0.01. Some providers have their own floors (for example a gift card may start at $1) and fees — we always show the fee and exactly what you’ll receive before you confirm.',
+    a: 'No Lucrum minimum. You can cash out $0.01. Some providers have their own floors (for example a gift card may start at $1) and fees — we always show the fee and exactly what you’ll receive before you confirm.',
   },
   {
     id: 'speed',
@@ -139,19 +139,19 @@ export const FAQ: FaqItem[] = [
   {
     id: 'devices',
     category: 'account',
-    q: 'Can I use CashAds on more than one device?',
+    q: 'Can I use Lucrum on more than one device?',
     a: 'Yes, you can be signed in everywhere. To prevent farming, only one device can be actively earning (watching a video or answering polls) at a time — you can take over from another device in one tap.',
   },
   {
     id: '2fa',
     category: 'account',
     q: 'How do I protect my account?',
-    a: 'Turn on two-factor authentication (authenticator app) in Profile → Security, review your signed-in devices, and never share codes. CashAds staff will never ask for your password or codes.',
+    a: 'Turn on two-factor authentication (authenticator app) in Profile → Security, review your signed-in devices, and never share codes. Lucrum staff will never ask for your password or codes.',
   },
   {
     id: 'legit',
     category: 'trust',
-    q: 'How do I know CashAds is legit?',
+    q: 'How do I know Lucrum is legit?',
     a: 'Don’t trust — verify. Our Transparency page shows total paid, live payouts, median payout time, postback success rate, claim resolution times and the revenue share we actually paid. Try a small cash-out first — you can withdraw $0.05 to see it arrive.',
   },
   {
