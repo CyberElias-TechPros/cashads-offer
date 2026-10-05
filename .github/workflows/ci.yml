@@ -14,8 +14,8 @@ jobs:
     name: Typecheck · test · build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -46,15 +46,21 @@ jobs:
       SEED_DEMO: 'true'
       COOKIE_SECURE: 'false'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run build
       - run: npm run db:migrate
-      - run: npm run db:seed
+      - name: Seed demo data
+        run: |
+          set -o pipefail
+          npm run db:seed 2>&1 | tee seed.log
+      - name: Surface seed errors as annotations
+        if: failure()
+        run: tail -n 12 seed.log | while IFS= read -r line; do echo "::error title=db:seed::${line}"; done
       - name: Boot the production build and smoke-test it
         run: |
           cd apps/api
@@ -64,5 +70,6 @@ jobs:
           curl -sf http://127.0.0.1:4000/api/public/feed | grep -q '"amountMicros"'
           curl -sf http://127.0.0.1:4000/ | grep -q '<div id="root">'
           curl -sf http://127.0.0.1:4000/api/metrics | grep -q 'cashads_ledger_balanced 1'
-      - if: failure()
-        run: cat apps/api/server.log
+      - name: Surface server errors as annotations
+        if: failure()
+        run: test -f apps/api/server.log && tail -n 12 apps/api/server.log | while IFS= read -r line; do echo "::error title=server::${line}"; done || true
