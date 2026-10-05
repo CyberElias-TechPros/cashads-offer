@@ -125,24 +125,24 @@ describe('Paystack adapter (live NG bank payouts)', () => {
   it('creates a recipient then an idempotent transfer in kobo', async () => {
     const f = mockFetch({
       '/transferrecipient': { body: { status: true, data: { recipient_code: 'RCP_1' } } },
-      '/transfer': { body: { status: true, data: { status: 'success', reference: 'cashads_p1' } } },
+      '/transfer': { body: { status: true, data: { status: 'success', reference: 'lucrum_p1' } } },
     });
     const p = createPaystackProvider('sk', f as unknown as typeof fetch);
     const res = await p.send(ctx, {
       payoutId: 'p1',
-      reference: 'cashads_p1',
+      reference: 'lucrum_p1',
       methodId: 'ng_bank',
       netMicros: 2_000_000,
       localCurrency: 'NGN',
       localAmount: 3060,
       details: { bankCode: '058', accountNumber: '0123456789' },
     });
-    expect(res).toEqual({ status: 'completed', reference: 'cashads_p1' });
+    expect(res).toEqual({ status: 'completed', reference: 'lucrum_p1' });
     const transfer = JSON.parse(String(f.mock.calls[1]![1]!.body));
     expect(transfer).toMatchObject({
       amount: 306_000,
       recipient: 'RCP_1',
-      reference: 'cashads_p1',
+      reference: 'lucrum_p1',
       source: 'balance',
     });
   });
@@ -205,7 +205,7 @@ describe('Paystack adapter (live NG bank payouts)', () => {
   });
 
   it('verifies webhook signatures (HMAC-SHA512 of the raw body)', () => {
-    const body = '{"event":"transfer.success","data":{"reference":"cashads_p1"}}';
+    const body = '{"event":"transfer.success","data":{"reference":"lucrum_p1"}}';
     const sig = createHmac('sha512', 'sk').update(body).digest('hex');
     expect(verifyPaystackSignature('sk', body, sig)).toBe(true);
     expect(verifyPaystackSignature('sk', `${body} `, sig)).toBe(false);

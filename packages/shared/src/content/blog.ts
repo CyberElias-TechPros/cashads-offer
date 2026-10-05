@@ -11,7 +11,7 @@ export interface BlogPost {
 export const BLOG_POSTS: BlogPost[] = [
   {
     slug: 'why-no-points',
-    title: 'Why CashAds will never use points',
+    title: 'Why Lucrum will never use points',
     summary:
       'Points are a psychological buffer that hides low payouts. We show real money everywhere — here’s why.',
     date: '2026-09-02',
@@ -23,7 +23,7 @@ export const BLOG_POSTS: BlogPost[] = [
       },
       {
         heading: 'Real money, everywhere',
-        text: 'In CashAds every task shows what you earn in dollars (and your local currency), how long it really takes, and the hourly rate that works out to. Your balance is money. Your history is money. There is no exchange rate to decode.',
+        text: 'In Lucrum every task shows what you earn in dollars (and your local currency), how long it really takes, and the hourly rate that works out to. Your balance is money. Your history is money. There is no exchange rate to decode.',
       },
       {
         heading: 'Honesty about small amounts',
@@ -70,7 +70,7 @@ export const BLOG_POSTS: BlogPost[] = [
     tag: 'Product',
     body: [
       {
-        text: 'The absolute payout of a task tells you very little. What matters is what your time is worth. So every CashAds task shows payout, real duration and hourly rate.',
+        text: 'The absolute payout of a task tells you very little. What matters is what your time is worth. So every Lucrum task shows payout, real duration and hourly rate.',
       },
       {
         heading: 'Measured, not promised',
@@ -91,7 +91,7 @@ export const BLOG_POSTS: BlogPost[] = [
     tag: 'Guides',
     body: [
       {
-        text: 'Most rewards apps are built for the US and leave Nigerian members with money they can’t access. CashAds pays out on local rails.',
+        text: 'Most rewards apps are built for the US and leave Nigerian members with money they can’t access. Lucrum pays out on local rails.',
       },
       {
         heading: 'Bank transfer (Paystack)',

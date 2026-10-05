@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CircleCheck, CircleX, Clock, GraduationCap } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { type LessonDTO, type LessonSummaryDTO, formatUsd } from '@cashads/shared';
+import { type LessonDTO, type LessonSummaryDTO, formatUsd } from '@lucrum/shared';
 import { Badge, Button, ButtonLink, Callout, Card, PageHeader, Skeleton } from '../../components/ui';
 import { errorMessage, get, post } from '../../lib/api';
 import { qk } from '../../lib/queries';

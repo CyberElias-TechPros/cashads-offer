@@ -1,8 +1,8 @@
 {
-  "name": "@cashads/web",
+  "name": "@lucrum/web",
   "version": "0.1.0",
   "private": true,
-  "description": "CashAds web app (PWA) — public site, earner app and admin console.",
+  "description": "Lucrum web app (PWA) — public site, earner app and admin console.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@cashads/shared": "*",
+    "@lucrum/shared": "*",
     "@tanstack/react-query": "^5.104.1",
     "lucide-react": "^1.52.0",
     "react": "^19.3.0",

@@ -28,7 +28,7 @@ import {
   type UserPrefs,
   formatUsd,
   parseDollarInput,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { PhoneVerifyModal } from '../../components/verify';
 import {
   Badge,

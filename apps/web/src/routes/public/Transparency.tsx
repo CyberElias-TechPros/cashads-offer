@@ -5,7 +5,7 @@ import {
   type PublicStatsDTO,
   type WallOfShameDTO,
   formatUsd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { FeedRow } from '../../components/earn';
 import { Badge, Callout, Card, CardHeader, Progress, Skeleton } from '../../components/ui';
 import { get } from '../../lib/api';

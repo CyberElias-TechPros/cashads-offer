@@ -9,7 +9,7 @@ import {
   registerSchema,
   resetPasswordSchema,
   tokenSchema,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { z } from 'zod';
 import { clearSessionCookie, requireUser } from '../http/auth';
 import { sessions } from '../db/schema';

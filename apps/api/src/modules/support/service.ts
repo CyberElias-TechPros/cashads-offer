@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, sql } from 'drizzle-orm';
-import { type FeatureRequestDTO, type TicketDTO, getTier } from '@cashads/shared';
+import { type FeatureRequestDTO, type TicketDTO, getTier } from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import { featureRequests, featureVotes, ticketMessages, tickets, users } from '../../db/schema';
 import type { UserRow } from '../../http/auth';
@@ -70,7 +70,7 @@ export async function createTicket(
       await sendEmail(tx, {
         to: input.email,
         subject: `We got your message: ${input.subject}`,
-        body: `Thanks for contacting CashAds. A person will reply by ${t!.slaDueAt.toUTCString()}.`,
+        body: `Thanks for contacting Lucrum. A person will reply by ${t!.slaDueAt.toUTCString()}.`,
       });
     }
     return t!;

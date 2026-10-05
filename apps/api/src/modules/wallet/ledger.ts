@@ -1,5 +1,5 @@
 import { and, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
-import type { TransactionDTO, TxnType } from '@cashads/shared';
+import type { TransactionDTO, TxnType } from '@lucrum/shared';
 import type { DbOrTx } from '../../db/client';
 import { ledgerAccounts, ledgerEntries, ledgerTransactions } from '../../db/schema';
 import { AppError, isCheckViolation } from '../../lib/errors';

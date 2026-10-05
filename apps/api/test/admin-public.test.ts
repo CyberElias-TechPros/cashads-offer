@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { usd } from '@cashads/shared';
+import { usd } from '@lucrum/shared';
 import { auditLogs, offerClicks, offers, users } from '../src/db/schema';
 import { SYS, postTransaction, userAccountCode } from '../src/modules/wallet/ledger';
 import { invalidateStatsCache } from '../src/modules/transparency/service';

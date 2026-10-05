@@ -1,6 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { usd } from '@cashads/shared';
+import { usd } from '@lucrum/shared';
 import { conversions, fraudFlags, offers, postbackLogs, referrals, users } from '../src/db/schema';
 import { getNetworkSecret, microsToDecimal, sandboxSign } from '../src/modules/networks/adapters';
 import { balancesMatchEntries, ledgerIsBalanced } from '../src/modules/wallet/ledger';
@@ -182,7 +182,7 @@ describe('postback pipeline', () => {
 });
 
 describe('referrals & fraud', () => {
-  it('pays both sides when the friend completes their first task, then 10% residuals paid by CashAds', async () => {
+  it('pays both sides when the friend completes their first task, then 10% residuals paid by Lucrum', async () => {
     const referrer = await registerUser(env);
     const friend = await registerUser(env, { referralCode: referrer.user.referralCode });
     const s = env.ctx.settings.get();

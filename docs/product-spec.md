@@ -1,5 +1,5 @@
 # cashads-offer
-cashads
+Lucrum
 I want to make a web app where people come in to earn points by viewing ads..., I need all possible flows, uses/edge/etc cases, OK what about known pain points that can be solved to give this app and edge over its peers, All screens, pages, features, components, interactions, interactions/interflows between the front-end components, interactions/interflows between backend components, and then between backend and front-end and every other thing in between.
 
 But I don't know what the app is supposed to be about and how to get people to Actually want it or even participate, how do I retain them too

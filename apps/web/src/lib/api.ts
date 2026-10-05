@@ -27,7 +27,7 @@ export async function api<T>(
   const headers: Record<string, string> = { 'x-device-id': deviceId() };
   const fp = deviceFingerprint();
   if (fp) headers['x-device-fp'] = fp;
-  if (method !== 'GET') headers['x-requested-with'] = 'cashads';
+  if (method !== 'GET') headers['x-requested-with'] = 'lucrum';
   const isForm = typeof FormData !== 'undefined' && opts.body instanceof FormData;
   if (opts.body !== undefined && !isForm) headers['content-type'] = 'application/json';
   let res: Response;

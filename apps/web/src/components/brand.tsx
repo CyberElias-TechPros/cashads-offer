@@ -8,20 +8,21 @@ export function LogoMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" className={cn('size-8', className)} aria-hidden>
       <defs>
-        <linearGradient id="ca-g" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id="lc-g" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#10b981" />
           <stop offset="1" stopColor="#047857" />
         </linearGradient>
       </defs>
-      <rect width="64" height="64" rx="16" fill="url(#ca-g)" />
+      <rect width="64" height="64" rx="16" fill="url(#lc-g)" />
       <path
-        d="M44.5 22.5A15 15 0 1 0 44.5 41.5"
+        d="M25 19V44H43"
         fill="none"
         stroke="#fff"
         strokeWidth="7"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <circle cx="45" cy="32" r="4.5" fill="#fde68a" />
+      <circle cx="44.5" cy="21" r="4.5" fill="#fde68a" />
     </svg>
   );
 }
@@ -34,11 +35,11 @@ export function Logo({ to = '/', className }: { to?: string; className?: string 
         'flex items-center gap-2 font-bold tracking-tight text-slate-900 dark:text-white',
         className,
       )}
-      aria-label="CashAds home"
+      aria-label="Lucrum home"
     >
       <LogoMark />
       <span className="text-lg">
-        Cash<span className="text-brand-600 dark:text-brand-400">Ads</span>
+        Luc<span className="text-brand-600 dark:text-brand-400">rum</span>
       </span>
     </Link>
   );

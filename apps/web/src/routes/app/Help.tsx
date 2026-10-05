@@ -18,7 +18,7 @@ import {
   TICKET_CATEGORIES,
   type TicketDTO,
   formatUsd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { FaqList } from '../public/pages';
 import {
   Badge,
@@ -208,7 +208,7 @@ export function TicketPage() {
               )}
             >
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide opacity-70">
-                {m.authorType === 'user' ? 'You' : m.authorType === 'staff' ? 'CashAds support' : 'Automatic'}
+                {m.authorType === 'user' ? 'You' : m.authorType === 'staff' ? 'Lucrum support' : 'Automatic'}
               </p>
               <p className="whitespace-pre-wrap leading-relaxed">{m.body}</p>
               <p className="mt-1 text-[11px] opacity-60">{dateTime(m.createdAt)}</p>

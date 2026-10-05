@@ -1,16 +1,16 @@
-# Local production-like stack: PostgreSQL + the CashAds app on http://localhost:4000
+# Local production-like stack: PostgreSQL + the Lucrum app on http://localhost:4000
 #   DATA_ENCRYPTION_KEY=$(openssl rand -hex 32) docker compose up --build
 services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: cashads
-      POSTGRES_PASSWORD: cashads
-      POSTGRES_DB: cashads
+      POSTGRES_USER: lucrum
+      POSTGRES_PASSWORD: lucrum
+      POSTGRES_DB: lucrum
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U cashads -d cashads']
+      test: ['CMD-SHELL', 'pg_isready -U lucrum -d lucrum']
       interval: 5s
       timeout: 3s
       retries: 20
@@ -21,7 +21,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgres://cashads:cashads@db:5432/cashads
+      DATABASE_URL: postgres://lucrum:lucrum@db:5432/lucrum
       DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?Set DATA_ENCRYPTION_KEY (e.g. openssl rand -hex 32)}
       APP_URL: http://localhost:4000
       # Plain http locally — set to true behind HTTPS.

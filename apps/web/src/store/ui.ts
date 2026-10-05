@@ -42,7 +42,7 @@ export const useUI = create<UIState>((set) => ({
   celebrations: [],
   theme: ((): Theme => {
     try {
-      return (localStorage.getItem('cashads.theme') as Theme) || 'system';
+      return (localStorage.getItem('lucrum.theme') as Theme) || 'system';
     } catch {
       return 'system';
     }
@@ -64,7 +64,7 @@ export const useUI = create<UIState>((set) => ({
   endCelebration: (id) => set((s) => ({ celebrations: s.celebrations.filter((x) => x.id !== id) })),
   setTheme: (theme) => {
     try {
-      localStorage.setItem('cashads.theme', theme);
+      localStorage.setItem('lucrum.theme', theme);
     } catch {
       /* ignore */
     }

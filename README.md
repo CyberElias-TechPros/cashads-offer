@@ -1,14 +1,14 @@
-# CashAds — the trust-first rewards wallet
+# Lucrum — the trust-first rewards wallet
 
 > **Real cash for your spare minutes. No points. No minimum. Paid even when tracking fails.**
 
-CashAds pays people real money for short tasks — surveys, app trials, sign-ups, quick polls, micro-lessons and
+Lucrum pays people real money for short tasks — surveys, app trials, sign-ups, quick polls, micro-lessons and
 rewarded videos — and lets them cash out **from $0.01** on rails that actually work where they live (bank transfer
 and airtime in Nigeria, MoMo in Ghana, M-Pesa in Kenya, UPI, GCash, Pix, PayPal, Lightning, USDT…).
 
 It is built from the product research in [`docs/product-spec.md`](docs/product-spec.md): rewards apps fail on
 **trust**, not technology — credits that never arrive, minimums you never reach, points that hide low pay, payouts
-that take weeks and bans without reasons. CashAds is engineered the other way round.
+that take weeks and bans without reasons. Lucrum is engineered the other way round.
 
 |                                                                               |                                                                           |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -55,10 +55,10 @@ npm run dev
 The first boot migrates the database and seeds a **sandbox** world (~40 members with 40 days of ledger-backed history,
 offers across 12 countries, ad creatives, causes and work in every admin queue).
 
-| Account               | Email                 | Password           |
-| --------------------- | --------------------- | ------------------ |
-| Demo member (Nigeria) | `demo@cashads.local`  | `Demo-earner-2026` |
-| Admin                 | `admin@cashads.local` | `Admin-demo-2026`  |
+| Account               | Email                | Password           |
+| --------------------- | -------------------- | ------------------ |
+| Demo member (Nigeria) | `demo@lucrum.local`  | `Demo-earner-2026` |
+| Admin                 | `admin@lucrum.local` | `Admin-demo-2026`  |
 
 The sign-in page has one-tap buttons for both in sandbox mode.
 

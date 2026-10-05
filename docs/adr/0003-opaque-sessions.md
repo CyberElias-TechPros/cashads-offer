@@ -4,7 +4,7 @@
 
 ## Context
 
-The spec sketches `/auth/refresh` with JWTs. CashAds is a first-party web app where account takeover means stolen
+The spec sketches `/auth/refresh` with JWTs. Lucrum is a first-party web app where account takeover means stolen
 money, and the product needs remote sign-out, instant revocation on ban/password reset and a device list.
 
 ## Decision

@@ -40,7 +40,7 @@ export const registerSchema = z.object({
   timezone: z.string().max(64).optional(),
   referralCode: z.string().trim().toUpperCase().max(20).optional(),
   acceptTerms: z.literal(true, { error: 'You need to accept the terms to continue' }),
-  confirmAdult: z.literal(true, { error: 'CashAds is for people aged 18+' }),
+  confirmAdult: z.literal(true, { error: 'Lucrum is for people aged 18+' }),
 });
 export type RegisterInput = z.infer<typeof registerSchema>;
 

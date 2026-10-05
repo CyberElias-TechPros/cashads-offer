@@ -78,6 +78,6 @@ export function verifyTotp(
   return null;
 }
 
-export function otpauthUrl(secret: string, account: string, issuer = 'CashAds'): string {
+export function otpauthUrl(secret: string, account: string, issuer = 'Lucrum'): string {
   return `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(account)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
 }

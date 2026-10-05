@@ -26,14 +26,14 @@ import {
   formatUsd,
   getCountry,
   payoutMethodsForCountry,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { FeedTicker, OfferIcon, QualityBadge } from '../../components/earn';
 import { ButtonLink, Chip } from '../../components/ui';
 import { get } from '../../lib/api';
 import { browserTimezone } from '../../lib/device';
 import { useConfig, usePublicFeed } from '../../lib/queries';
 import { cn, duration, minutesLabel, pct } from '../../lib/utils';
-import { guessCountryFromTimezone } from '@cashads/shared';
+import { guessCountryFromTimezone } from '@lucrum/shared';
 
 export function Landing() {
   const { data: stats } = useQuery({
@@ -272,7 +272,7 @@ function Promises() {
         </h2>
         <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
           Rewards apps lose people the same way: credits that never arrive, minimums you never reach, payouts
-          that take weeks. We designed CashAds the other way round.
+          that take weeks. We designed Lucrum the other way round.
         </p>
       </div>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -324,13 +324,13 @@ function Comparison() {
     <section className="bg-white py-20 dark:bg-slate-900/40">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-          CashAds vs. the typical rewards app
+          Lucrum vs. the typical rewards app
         </h2>
         <div className="mt-10 overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800">
           <div className="grid grid-cols-[1fr_1.2fr_1fr] bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-900">
             <div className="p-4" />
             <div className="bg-brand-50 p-4 text-brand-800 dark:bg-brand-950/50 dark:text-brand-300">
-              CashAds
+              Lucrum
             </div>
             <div className="p-4">Typical app</div>
           </div>

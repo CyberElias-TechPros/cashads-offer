@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Camera, CircleHelp, Clock, Search, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
-import { type ActivityItemDTO, type ClaimDTO, formatUsd } from '@cashads/shared';
+import { type ActivityItemDTO, type ClaimDTO, formatUsd } from '@lucrum/shared';
 import { ClaimStatusBadge, ClickStatusBadge, OfferIcon } from '../../components/earn';
 import {
   Button,
@@ -302,7 +302,7 @@ export function ClaimDetail() {
     postback_found: 'The network had reported your completion — a processing error on our side held it up.',
     network_confirmed: 'The network confirmed your completion when we asked.',
     goodwill_auto: 'Paid instantly as goodwill for trusted members. We’re chasing the network ourselves.',
-    goodwill_manual: 'Approved by a reviewer and paid by CashAds.',
+    goodwill_manual: 'Approved by a reviewer and paid by Lucrum.',
     sla_auto: 'We missed our 24-hour promise, so it was approved automatically.',
   };
   return (

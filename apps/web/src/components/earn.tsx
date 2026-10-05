@@ -12,7 +12,7 @@ import {
   PAY_SPEEDS,
   type PayoutStatus,
   formatUsd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { useMoney } from '../lib/queries';
 import { cn, duration, minutesLabel, pct, timeAgo } from '../lib/utils';
 import { Badge, type Tone } from './ui';

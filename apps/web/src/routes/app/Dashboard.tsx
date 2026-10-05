@@ -21,7 +21,7 @@ import {
   type StreakDTO,
   type TierProgressDTO,
   formatUsd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { useAnimatedNumber } from '../../components/brand';
 import { FeedRow, OfferCard, OfferCardSkeleton, OfferIcon } from '../../components/earn';
 import { Button, ButtonLink, Card, CardHeader, Progress, Skeleton } from '../../components/ui';
@@ -286,7 +286,7 @@ function StreakMilestone({ current }: { current: number }) {
         </p>
       )}
       <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-        Streak bonuses are paid by CashAds — never taken from your task earnings.
+        Streak bonuses are paid by Lucrum — never taken from your task earnings.
       </p>
     </div>
   );

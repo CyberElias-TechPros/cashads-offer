@@ -7,7 +7,7 @@ import {
   type PollDTO,
   getLesson,
   getPoll,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import { lessonAttempts, pollResponses } from '../../db/schema';
 import type { ClientInfo, UserRow } from '../../http/auth';

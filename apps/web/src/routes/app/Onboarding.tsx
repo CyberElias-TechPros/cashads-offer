@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Banknote, CircleDollarSign, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { type MeDTO, formatUsd, getCountry, payoutMethodsForCountry } from '@cashads/shared';
+import { type MeDTO, formatUsd, getCountry, payoutMethodsForCountry } from '@lucrum/shared';
 import { Button } from '../../components/ui';
 import { post } from '../../lib/api';
 import { qk, useMe } from '../../lib/queries';
