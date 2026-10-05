@@ -17,7 +17,10 @@ export async function enqueue(runtime: WorkerRuntime, kind: string, payload: unk
   return id;
 }
 
-export async function claimBatch(runtime: WorkerRuntime, limit = 25): Promise<Array<{ id: string; kind: string; payload: string }>> {
+export async function claimBatch(
+  runtime: WorkerRuntime,
+  limit = 25,
+): Promise<Array<{ id: string; kind: string; payload: string }>> {
   const rows = await runtime.db
     .prepare(
       `SELECT id, kind, payload FROM worker_jobs
@@ -28,7 +31,9 @@ export async function claimBatch(runtime: WorkerRuntime, limit = 25): Promise<Ar
     .all<{ id: string; kind: string; payload: string }>();
   for (const row of rows.results) {
     await runtime.db
-      .prepare(`UPDATE worker_jobs SET status = 'running', attempts = attempts + 1 WHERE id = ? AND status = 'pending'`)
+      .prepare(
+        `UPDATE worker_jobs SET status = 'running', attempts = attempts + 1 WHERE id = ? AND status = 'pending'`,
+      )
       .bind(row.id)
       .run();
   }
@@ -36,12 +41,17 @@ export async function claimBatch(runtime: WorkerRuntime, limit = 25): Promise<Ar
 }
 
 export async function complete(runtime: WorkerRuntime, id: string): Promise<void> {
-  await runtime.db.prepare(`UPDATE worker_jobs SET status = 'complete', completed_at = datetime('now') WHERE id = ?`).bind(id).run();
+  await runtime.db
+    .prepare(`UPDATE worker_jobs SET status = 'complete', completed_at = datetime('now') WHERE id = ?`)
+    .bind(id)
+    .run();
 }
 
 export async function retry(runtime: WorkerRuntime, id: string, message: string): Promise<void> {
   await runtime.db
-    .prepare(`UPDATE worker_jobs SET status = 'pending', last_error = ?, run_after = datetime('now', '+5 minutes') WHERE id = ?`)
+    .prepare(
+      `UPDATE worker_jobs SET status = 'pending', last_error = ?, run_after = datetime('now', '+5 minutes') WHERE id = ?`,
+    )
     .bind(message.slice(0, 1000), id)
     .run();
 }
