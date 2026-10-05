@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline — CashAds</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #f8fafc;
+        color: #0f172a;
+      }
+      main {
+        max-width: 22rem;
+        padding: 2rem;
+        text-align: center;
+      }
+      h1 {
+        font-size: 1.25rem;
+      }
+      p {
+        color: #475569;
+        line-height: 1.5;
+      }
+      button {
+        background: #059669;
+        color: white;
+        border: 0;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>You’re offline</h1>
+      <p>Your balance is safe on our servers. Reconnect and we’ll pick up exactly where you left off.</p>
+      <button onclick="location.reload()">Try again</button>
+    </main>
+  </body>
+</html>
