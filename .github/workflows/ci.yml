@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck · test · build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run typecheck
+      # API integration tests run against real Postgres semantics (PGlite, in-memory per file).
+      - run: npm test
+      - run: npm run build
+
+  postgres:
+    name: Migrations + seed + smoke on PostgreSQL 17
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: cashads
+          POSTGRES_PASSWORD: cashads
+          POSTGRES_DB: cashads
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U cashads" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgres://cashads:cashads@localhost:5432/cashads
+      DATA_ENCRYPTION_KEY: 0000000000000000000000000000000000000000000000000000000000000001
+      SANDBOX_MODE: 'true'
+      SEED_DEMO: 'true'
+      COOKIE_SECURE: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run db:migrate
+      - run: npm run db:seed
+      - name: Boot the production build and smoke-test it
+        run: |
+          cd apps/api
+          NODE_ENV=production SERVE_WEB=true node dist/server.js > server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4000/api/ready && break; sleep 1; done
+          curl -sf http://127.0.0.1:4000/api/public/stats | tee /dev/stderr | grep -q '"payoutsCompleted"'
+          curl -sf http://127.0.0.1:4000/api/public/feed | grep -q '"amountMicros"'
+          curl -sf http://127.0.0.1:4000/ | grep -q '<div id="root">'
+          curl -sf http://127.0.0.1:4000/api/metrics | grep -q 'cashads_ledger_balanced 1'
+      - if: failure()
+        run: cat apps/api/server.log
