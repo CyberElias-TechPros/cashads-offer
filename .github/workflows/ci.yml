@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Typecheck (shared, api, web)
+        run: npm run typecheck
+      - name: Migrations are up to date
+        run: npm run db:generate -- --name ci-check && git diff --exit-code apps/api/drizzle
+      - name: API integration tests (embedded Postgres)
+        run: npm test
+      - name: Build
+        run: npm run build

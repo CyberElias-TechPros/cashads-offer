@@ -1,0 +1,30 @@
+{
+  "name": "cashads",
+  "private": true,
+  "version": "1.0.0",
+  "description": "CashAds — the trust-first rewards wallet. Real money, instant cash outs, no minimum, no points.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c green,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev -w @cashads/api",
+    "dev:web": "npm run dev -w @cashads/web",
+    "build": "npm run build -w @cashads/api && npm run build -w @cashads/web",
+    "start": "concurrently -k -n api,web -c green,cyan \"npm run start -w @cashads/api\" \"npm run start -w @cashads/web\"",
+    "test": "npm run test -w @cashads/api",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate -w @cashads/api",
+    "db:migrate": "npm run db:migrate -w @cashads/api",
+    "db:seed": "npm run db:seed -w @cashads/api",
+    "db:reset": "npm run db:reset -w @cashads/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=20.9"
+  }
+}
