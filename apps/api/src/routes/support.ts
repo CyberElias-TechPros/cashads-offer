@@ -6,7 +6,7 @@ import {
   kycSubmitSchema,
   ticketCreateSchema,
   ticketReplySchema,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { z } from 'zod';
 import { requireActiveUser, requireUser } from '../http/auth';
 import { badRequest } from '../lib/errors';
@@ -123,7 +123,7 @@ export const supportRoutes: FastifyPluginAsyncZod = async (app) => {
     { schema: { tags: ['tax'], summary: 'Yearly earnings summary (CSV)', querystring: yearQuery } },
     async (req, reply) => {
       const summary = await taxSummary(ctx, requireUser(req), req.query.year);
-      return csvReply(reply, `cashads-earnings-${req.query.year}.csv`, taxCsv(summary));
+      return csvReply(reply, `lucrum-earnings-${req.query.year}.csv`, taxCsv(summary));
     },
   );
 

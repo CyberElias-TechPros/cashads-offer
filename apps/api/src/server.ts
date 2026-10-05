@@ -44,7 +44,7 @@ async function main(): Promise<void> {
       worker: config.WORKER_ENABLED,
       docs: config.API_DOCS ? `/api/docs` : 'disabled',
     },
-    `CashAds API ready on http://${config.HOST}:${config.PORT}`,
+    `Lucrum API ready on http://${config.HOST}:${config.PORT}`,
   );
   if (config.SANDBOX_MODE && config.SEED_DEMO) {
     app.log.info(

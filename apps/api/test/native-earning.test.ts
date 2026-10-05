@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { LESSONS } from '@cashads/shared';
+import { LESSONS } from '@lucrum/shared';
 import { computeVisibleMs, validateEventChain } from '../src/modules/ads/service';
 import { Client, type TestEnv, balance, createTestEnv, registerUser } from './helpers';
 

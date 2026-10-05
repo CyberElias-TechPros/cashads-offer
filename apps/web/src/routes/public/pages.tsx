@@ -12,7 +12,7 @@ import {
   formatUsd,
   getBlogPost,
   getLegalDoc,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { Badge, Button, ButtonLink, Callout, Card, Chip, Input, Select, Textarea } from '../../components/ui';
 import { errorMessage, get, post } from '../../lib/api';
 import { useConfig } from '../../lib/queries';
@@ -62,7 +62,7 @@ export function HowItWorks() {
       title: 'Cashing out',
       steps: [
         'Choose a method that works in your country — bank, airtime, mobile money, UPI, Pix, PayPal, Lightning or USDT.',
-        'See the provider fee and exactly what you’ll receive (in your local currency) before confirming. No CashAds minimum.',
+        'See the provider fee and exactly what you’ll receive (in your local currency) before confirming. No Lucrum minimum.',
         'Most cash-outs are automatic and arrive in minutes. If a provider is down we retry automatically — and if it fails, the full amount comes back.',
       ],
     },
@@ -95,7 +95,7 @@ export function HowItWorks() {
           <p className="mt-3 leading-relaxed text-slate-700 dark:text-slate-300">
             Brands pay networks to find real customers; networks pay us when you complete a task. We pass{' '}
             <strong>{config?.revenueSharePercent ?? 60}%</strong> of that to you and keep the rest to run
-            CashAds, pay for fraud prevention and fund bonuses and goodwill credits. Rewarded videos pay very
+            Lucrum, pay for fraud prevention and fund bonuses and goodwill credits. Rewarded videos pay very
             little — we show you exactly how little, and point you to tasks that pay 50–500× more.
           </p>
         </Card>
@@ -183,7 +183,7 @@ export function Blog() {
     <Container>
       <Hero
         eyebrow="Blog & guides"
-        title="Notes from the CashAds team"
+        title="Notes from the Lucrum team"
         subtitle="How the product works, why we made the choices we did, and practical guides."
       />
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -354,7 +354,7 @@ export function Status() {
       <Hero
         eyebrow="Status"
         title="System status"
-        subtitle="Live health of every part of CashAds, including each payout provider."
+        subtitle="Live health of every part of Lucrum, including each payout provider."
       />
       {!isLoading && (
         <Callout
@@ -410,7 +410,7 @@ export function ReferralLanding() {
   const { data: config } = useConfig();
   useEffect(() => {
     try {
-      localStorage.setItem('cashads.ref', code.toUpperCase());
+      localStorage.setItem('lucrum.ref', code.toUpperCase());
     } catch {
       /* ignore */
     }
@@ -421,7 +421,7 @@ export function ReferralLanding() {
         <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
           <Gift className="size-7" />
         </div>
-        <h1 className="mt-5 text-3xl font-bold tracking-tight">A friend invited you to CashAds</h1>
+        <h1 className="mt-5 text-3xl font-bold tracking-tight">A friend invited you to Lucrum</h1>
         <p className="mx-auto mt-3 max-w-md text-slate-600 dark:text-slate-400">
           Complete your first task and you’ll <strong>both</strong> get{' '}
           {config ? formatUsd(config.referralBonusMicros) : '$0.50'} — real money, cash out any time.

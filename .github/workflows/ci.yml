@@ -33,15 +33,17 @@ jobs:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_USER: cashads
-          POSTGRES_PASSWORD: cashads
-          POSTGRES_DB: cashads
+          POSTGRES_USER: lucrum
+          POSTGRES_PASSWORD: lucrum
+          POSTGRES_DB: lucrum
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U cashads" --health-interval 5s --health-timeout 3s --health-retries 20
+          --health-cmd "pg_isready -U lucrum" --health-interval 5s --health-timeout 3s --health-retries 20
     env:
-      DATABASE_URL: postgres://cashads:cashads@localhost:5432/cashads
-      DATA_ENCRYPTION_KEY: 0000000000000000000000000000000000000000000000000000000000000001
+      DATABASE_URL: postgres://lucrum:lucrum@localhost:5432/lucrum
+      # Quoted: an unquoted all-digit scalar is parsed as a number (this 64-char key → "1"),
+      # which then fails the 32-byte key check in configureEncryption.
+      DATA_ENCRYPTION_KEY: '0000000000000000000000000000000000000000000000000000000000000001'
       SANDBOX_MODE: 'true'
       SEED_DEMO: 'true'
       COOKIE_SECURE: 'false'
@@ -69,7 +71,7 @@ jobs:
           curl -sf http://127.0.0.1:4000/api/public/stats | tee /dev/stderr | grep -q '"payoutsCompleted"'
           curl -sf http://127.0.0.1:4000/api/public/feed | grep -q '"amountMicros"'
           curl -sf http://127.0.0.1:4000/ | grep -q '<div id="root">'
-          curl -sf http://127.0.0.1:4000/api/metrics | grep -q 'cashads_ledger_balanced 1'
+          curl -sf http://127.0.0.1:4000/api/metrics | grep -q 'lucrum_ledger_balanced 1'
       - name: Surface server errors as annotations
         if: failure()
         run: test -f apps/api/server.log && tail -n 12 apps/api/server.log | while IFS= read -r line; do echo "::error title=server::${line}"; done || true

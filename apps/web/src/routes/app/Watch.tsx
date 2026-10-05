@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CircleCheck, CircleX, Loader2, Pause, Play, Smartphone, Zap } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { type AdCreativeDTO, type AdNextDTO, type AdSessionDTO, formatUsd } from '@cashads/shared';
+import { type AdCreativeDTO, type AdNextDTO, type AdSessionDTO, formatUsd } from '@lucrum/shared';
 import {
   Button,
   ButtonLink,

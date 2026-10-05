@@ -21,7 +21,7 @@ import {
   adminRoleSchema,
   adminTicketReplySchema,
   settingsPatchSchema,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { z } from 'zod';
 import { claims, kycSubmissions } from '../db/schema';
 import { requireRole } from '../http/auth';
@@ -329,7 +329,7 @@ export const adminRoutes: FastifyPluginAsyncZod = async (app) => {
         'goodwill_manual',
         req.body.amountMicros ?? claim.amountMicros,
         actor.id,
-        req.body.note || 'Approved after review — paid by CashAds while we follow up with the network.',
+        req.body.note || 'Approved after review — paid by Lucrum while we follow up with the network.',
       );
       await audit(ctx.db, {
         actorId: actor.id,

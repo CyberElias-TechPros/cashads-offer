@@ -1,5 +1,5 @@
 import { and, eq, inArray, lt, sql } from 'drizzle-orm';
-import { formatUsd } from '@cashads/shared';
+import { formatUsd } from '@lucrum/shared';
 import type { AppContext } from '../context';
 import { claims, networks, offerClicks, offers, streaks, users } from '../db/schema';
 import { creditAdSession, expireStaleAdSessions } from '../modules/ads/service';
@@ -35,7 +35,7 @@ async function earningAfter(ctx: AppContext, p: Record<string, unknown>): Promis
       type: 'bonus_first_task',
       userId,
       idempotencyKey: `first_task:${userId}`,
-      description: 'First-task bonus — welcome to CashAds!',
+      description: 'First-task bonus — welcome to Lucrum!',
       referenceType: 'bonus',
       referenceId: sourceKey,
       entries: [
@@ -131,7 +131,7 @@ async function clickCheck(ctx: AppContext, p: Record<string, unknown>): Promise<
       row.user,
       {
         clickId,
-        note: 'Filed automatically by CashAds: no confirmation from the network 72 hours after you reported finishing.',
+        note: 'Filed automatically by Lucrum: no confirmation from the network 72 hours after you reported finishing.',
       },
       { autoFiled: true },
     );

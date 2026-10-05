@@ -8,7 +8,7 @@ import {
   type OffersQuery,
   computeOfferQuality,
   hourlyRate,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';
 import {

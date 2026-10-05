@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Check, Timer, Zap } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { type PollDTO, formatUsd } from '@cashads/shared';
+import { type PollDTO, formatUsd } from '@lucrum/shared';
 import { Button, ButtonLink, Callout, Card, EmptyState, PageHeader, Skeleton } from '../../components/ui';
 import { ApiError, errorMessage, get, post } from '../../lib/api';
 import { qk } from '../../lib/queries';
@@ -146,7 +146,7 @@ export function QuickTasks() {
         />
       )}
       <p className="mt-6 text-center text-xs text-slate-500">
-        Answers are anonymous and aggregated. Sponsors pay CashAds; you get 60%.
+        Answers are anonymous and aggregated. Sponsors pay Lucrum; you get 60%.
       </p>
       {session.count >= 3 && (
         <div className="mt-4 text-center">

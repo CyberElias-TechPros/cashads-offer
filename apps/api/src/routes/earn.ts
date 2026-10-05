@@ -9,7 +9,7 @@ import {
   offerReportSchema,
   offersQuerySchema,
   pollAnswerSchema,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { z } from 'zod';
 import { claims } from '../db/schema';
 import { requireActiveUser, requireUser } from '../http/auth';

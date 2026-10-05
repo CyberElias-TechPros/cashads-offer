@@ -14,7 +14,7 @@ import {
   getTier,
   isWholeCents,
   payoutMethodsForCountry,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';
 import { fraudFlags, payoutDestinations, payoutEvents, payouts, users } from '../../db/schema';
@@ -532,7 +532,7 @@ export async function processPayout(ctx: AppContext, payoutId: string): Promise<
   const { details, name } = loadDetails(claimed);
   const input = {
     payoutId,
-    reference: `cashads_${payoutId}`,
+    reference: `lucrum_${payoutId}`,
     methodId: claimed.methodId,
     netMicros: claimed.netMicros,
     localCurrency: claimed.localCurrency,
@@ -561,7 +561,7 @@ export async function pollPayout(ctx: AppContext, payoutId: string): Promise<voi
   const result = provider.poll
     ? await provider.poll(ctx, p.providerReference, {
         payoutId,
-        reference: `cashads_${payoutId}`,
+        reference: `lucrum_${payoutId}`,
         methodId: p.methodId,
         netMicros: p.netMicros,
         localCurrency: p.localCurrency,

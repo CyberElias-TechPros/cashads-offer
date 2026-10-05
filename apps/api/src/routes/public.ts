@@ -1,5 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { BRAND, type PublicConfigDTO, countrySchema, ticketCreateSchema } from '@cashads/shared';
+import { BRAND, type PublicConfigDTO, countrySchema, ticketCreateSchema } from '@lucrum/shared';
 import { z } from 'zod';
 import { createTicket } from '../modules/support/service';
 import {
@@ -28,7 +28,7 @@ export const publicRoutes: FastifyPluginAsyncZod = async (app) => {
         brand: {
           name: BRAND.name,
           tagline: BRAND.tagline,
-          community: { discord: 'https://discord.gg/cashads', telegram: 'https://t.me/cashads' },
+          community: { discord: 'https://discord.gg/lucrum', telegram: 'https://t.me/lucrum' },
         },
         referralBonusMicros: s.referralBonusMicros,
         referralResidualPercent: s.referralResidualBps / 100,

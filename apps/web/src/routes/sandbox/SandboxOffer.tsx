@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { CircleCheck, Download, FlaskConical, Loader2, Settings2, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { formatUsd } from '@cashads/shared';
+import { formatUsd } from '@lucrum/shared';
 import { Button, Callout, Checkbox, Input } from '../../components/ui';
 import { errorMessage, get, post } from '../../lib/api';
 import { cn } from '../../lib/utils';
@@ -37,12 +37,12 @@ const MODES: { id: Mode; label: string; detail: string; surveyOnly?: boolean }[]
   {
     id: 'drop',
     label: 'Lose the postback (tracking failure)',
-    detail: 'The network records it but never tells CashAds. Then use “I finished” or Missing Credit.',
+    detail: 'The network records it but never tells Lucrum. Then use “I finished” or Missing Credit.',
   },
   {
     id: 'duplicate',
     label: 'Send it twice',
-    detail: 'Networks retry. CashAds dedupes on the transaction id and credits once.',
+    detail: 'Networks retry. Lucrum dedupes on the transaction id and credits once.',
   },
   {
     id: 'bad_signature',
@@ -59,7 +59,7 @@ const MODES: { id: Mode; label: string; detail: string; surveyOnly?: boolean }[]
 
 /**
  * A simulated third-party advertiser page (SandboxNet). In production this is the
- * advertiser's real site; CashAds only sees the result through a signed postback.
+ * advertiser's real site; Lucrum only sees the result through a signed postback.
  */
 export function SandboxOffer() {
   const { clickId = '' } = useParams();
@@ -98,7 +98,7 @@ export function SandboxOffer() {
         <p className="text-lg font-semibold">This tracking link isn’t valid for your session.</p>
         <p className="mt-2 text-sm text-slate-500">{errorMessage(error)}</p>
         <Button className="mt-4" onClick={() => navigate('/app/earn')}>
-          Back to CashAds
+          Back to Lucrum
         </Button>
       </div>
     );
@@ -140,7 +140,7 @@ export function SandboxOffer() {
               </p>
             )}
             <div className="mt-6 flex flex-col justify-center gap-2 font-sans sm:flex-row">
-              <Button onClick={back}>Return to CashAds</Button>
+              <Button onClick={back}>Return to Lucrum</Button>
               {(mode === 'deliver' || mode === 'duplicate') && (
                 <Button
                   variant="outline"
@@ -154,7 +154,7 @@ export function SandboxOffer() {
             </div>
             {reverse.isSuccess && (
               <p className="mt-3 font-sans text-sm text-stone-500">
-                Check your CashAds notifications — under the default policy, CashAds absorbs reversals.
+                Check your Lucrum notifications — under the default policy, Lucrum absorbs reversals.
               </p>
             )}
           </div>

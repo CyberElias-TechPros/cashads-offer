@@ -1,8 +1,8 @@
 {
-  "name": "cashads",
+  "name": "lucrum",
   "version": "0.1.0",
   "private": true,
-  "description": "CashAds — the trust-first rewards wallet. Real cash, no points, no minimum, paid even when tracking fails.",
+  "description": "Lucrum — the trust-first rewards wallet. Real cash, no points, no minimum, paid even when tracking fails.",
   "type": "module",
   "workspaces": [
     "packages/*",
@@ -12,17 +12,17 @@
     "node": ">=22.12"
   },
   "scripts": {
-    "dev": "concurrently -k -n api,web -c green,cyan \"npm run dev -w @cashads/api\" \"npm run dev -w @cashads/web\"",
-    "build": "npm run build -w @cashads/web && npm run build -w @cashads/api",
-    "start": "npm run start -w @cashads/api",
+    "dev": "concurrently -k -n api,web -c green,cyan \"npm run dev -w @lucrum/api\" \"npm run dev -w @lucrum/web\"",
+    "build": "npm run build -w @lucrum/web && npm run build -w @lucrum/api",
+    "start": "npm run start -w @lucrum/api",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:generate": "npm run db:generate -w @cashads/api",
-    "db:migrate": "npm run db:migrate -w @cashads/api",
-    "db:seed": "npm run db:seed -w @cashads/api",
-    "db:reset": "npm run db:reset -w @cashads/api"
+    "db:generate": "npm run db:generate -w @lucrum/api",
+    "db:migrate": "npm run db:migrate -w @lucrum/api",
+    "db:seed": "npm run db:seed -w @lucrum/api",
+    "db:reset": "npm run db:reset -w @lucrum/api"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

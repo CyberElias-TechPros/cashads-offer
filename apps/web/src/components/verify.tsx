@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { type MeDTO, getCountry } from '@cashads/shared';
+import { type MeDTO, getCountry } from '@lucrum/shared';
 import { errorMessage, post } from '../lib/api';
 import { qk, useConfig, useMe } from '../lib/queries';
 import { toast } from '../store/ui';

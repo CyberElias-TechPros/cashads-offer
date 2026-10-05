@@ -3,8 +3,8 @@
  * A random ID in localStorage + a coarse, non-invasive characteristics hash
  * (disclosed in the privacy policy). No canvas/audio fingerprinting.
  */
-const KEY = 'cashads.device';
-const FP_KEY = 'cashads.device_fp';
+const KEY = 'lucrum.device';
+const FP_KEY = 'lucrum.device_fp';
 
 export function deviceId(): string {
   try {

@@ -90,7 +90,7 @@ export function guessCountryFromTimezone(tz: string | undefined): string {
 
 /* ────────────────────────────────────────────────────────────────────────────
  * Payout methods — local rails everywhere (spec pain point #7).
- * "No minimum" from CashAds: `minMicros` is ONLY a provider-imposed floor.
+ * "No minimum" from Lucrum: `minMicros` is ONLY a provider-imposed floor.
  * ──────────────────────────────────────────────────────────────────────────── */
 
 export interface PayoutField {
@@ -634,7 +634,7 @@ export const BAN_REASONS = {
   multi_account: {
     title: 'Multiple accounts',
     explanation:
-      'CashAds allows one account per person. This account shares devices, payout details or sign-up patterns with other accounts.',
+      'Lucrum allows one account per person. This account shares devices, payout details or sign-up patterns with other accounts.',
   },
   location_masking: {
     title: 'Location masking (VPN / proxy)',
@@ -660,7 +660,7 @@ export const BAN_REASONS = {
   },
   underage: {
     title: 'Age requirement',
-    explanation: 'CashAds is only available to people aged 18 and over.',
+    explanation: 'Lucrum is only available to people aged 18 and over.',
   },
   other: {
     title: 'Policy violation',
@@ -800,7 +800,7 @@ export const TXN_TYPES = {
   ad_reward: { label: 'Rewarded video', group: 'earning', icon: '▶️' },
   poll_reward: { label: 'Quick task', group: 'earning', icon: '⚡' },
   lesson_reward: { label: 'Lesson passed', group: 'earning', icon: '🎓' },
-  goodwill: { label: 'Missing credit — paid by CashAds', group: 'earning', icon: '🤝' },
+  goodwill: { label: 'Missing credit — paid by Lucrum', group: 'earning', icon: '🤝' },
   bonus_streak: { label: 'Daily streak bonus', group: 'bonus', icon: '🔥' },
   bonus_first_task: { label: 'First-task bonus', group: 'bonus', icon: '🌱' },
   bonus_plan: { label: 'Daily plan bonus', group: 'bonus', icon: '✅' },

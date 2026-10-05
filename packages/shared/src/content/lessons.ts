@@ -11,7 +11,7 @@ export interface LessonContent {
   icon: string;
   minutes: number;
   rewardMicros: number;
-  /** What the sponsor pays CashAds; the member gets `rewardMicros`. */
+  /** What the sponsor pays Lucrum; the member gets `rewardMicros`. */
   sponsorPayoutMicros: number;
   sponsor: string;
   passMark: number;
@@ -190,7 +190,7 @@ export const LESSONS: LessonContent[] = [
       },
       {
         heading: 'Start microscopic',
-        body: 'Even small, regular amounts compound into a buffer. Set a goal in CashAds and send part of every cash-out to a separate savings account.',
+        body: 'Even small, regular amounts compound into a buffer. Set a goal in Lucrum and send part of every cash-out to a separate savings account.',
       },
       {
         heading: 'Keep it boring',

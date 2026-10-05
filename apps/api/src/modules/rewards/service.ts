@@ -1,5 +1,5 @@
 import { and, eq, inArray, sql } from 'drizzle-orm';
-import { formatUsd, splitByBps } from '@cashads/shared';
+import { formatUsd, splitByBps } from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx, Tx } from '../../db/client';
 import {
@@ -219,7 +219,7 @@ export async function creditConversion(ctx: AppContext, input: CreditConversionI
 }
 
 /**
- * Advertiser chargeback. Default policy ("absorb"): CashAds eats the loss and the
+ * Advertiser chargeback. Default policy ("absorb"): Lucrum eats the loss and the
  * member's balance is untouched — unless the completion was fraudulent.
  */
 export async function reverseConversion(
@@ -280,7 +280,7 @@ export async function reverseConversion(
       description:
         fromUser > 0
           ? `Reversed by advertiser (fraud) — ${conv.title}`
-          : `Reversed by advertiser — covered by CashAds — ${conv.title}`,
+          : `Reversed by advertiser — covered by Lucrum — ${conv.title}`,
       referenceType: 'conversion',
       referenceId: conv.id,
       metadata: { policy: clawback ? 'clawback' : 'absorb' },
@@ -294,7 +294,7 @@ export async function reverseConversion(
       await notify(ctx, tx, conv.userId, {
         type: 'reversal_absorbed',
         title: 'An advertiser reversed a task — we covered it',
-        body: `The advertiser behind “${conv.title}” reversed your completion. Under our policy CashAds absorbs that loss, so your balance is unchanged.`,
+        body: `The advertiser behind “${conv.title}” reversed your completion. Under our policy Lucrum absorbs that loss, so your balance is unchanged.`,
         link: '/app/wallet',
       });
     }
@@ -304,7 +304,7 @@ export async function reverseConversion(
   return { outcome: res.outcome, clawedBack: res.clawedBack };
 }
 
-/** "We pay even when tracking fails": credit from CashAds' own goodwill budget. */
+/** "We pay even when tracking fails": credit from Lucrum' own goodwill budget. */
 export async function creditGoodwill(
   ctx: AppContext,
   tx: Tx,
@@ -314,7 +314,7 @@ export async function creditGoodwill(
     type: 'goodwill',
     userId: input.userId,
     idempotencyKey: `goodwill:${input.claimId}`,
-    description: `Missing credit paid by CashAds — ${input.title}`,
+    description: `Missing credit paid by Lucrum — ${input.title}`,
     referenceType: 'claim',
     referenceId: input.claimId,
     entries: [

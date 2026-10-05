@@ -84,7 +84,7 @@ export function configureEncryption(rawKey: string | undefined, allowDevKey: boo
   }
   if (!allowDevKey) throw new Error('DATA_ENCRYPTION_KEY is required');
   // Deterministic, clearly-non-production key for local development and tests.
-  encryptionKey = scryptSync('cashads-development-only-key', 'cashads-dev-salt', 32);
+  encryptionKey = scryptSync('lucrum-development-only-key', 'lucrum-dev-salt', 32);
 }
 
 function key(): Buffer {

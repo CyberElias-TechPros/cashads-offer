@@ -1,6 +1,6 @@
 import { and, desc, eq, inArray, isNull, lt } from 'drizzle-orm';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { deleteAccountSchema, updatePrefsSchema, updateProfileSchema } from '@cashads/shared';
+import { deleteAccountSchema, updatePrefsSchema, updateProfileSchema } from '@lucrum/shared';
 import { z } from 'zod';
 import { notifications, users } from '../db/schema';
 import { clearSessionCookie, requireUser } from '../http/auth';
@@ -58,7 +58,7 @@ export const meRoutes: FastifyPluginAsyncZod = async (app) => {
         .header('content-type', 'application/json; charset=utf-8')
         .header(
           'content-disposition',
-          `attachment; filename="cashads-data-${new Date().toISOString().slice(0, 10)}.json"`,
+          `attachment; filename="lucrum-data-${new Date().toISOString().slice(0, 10)}.json"`,
         )
         .send(JSON.stringify(data, null, 2));
     },

@@ -10,7 +10,7 @@ import {
   type TransactionDTO,
   formatLocal,
   formatUsd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { Money as MoneyText } from '../../components/brand';
 import { PayoutStatusBadge } from '../../components/earn';
 import {

@@ -197,8 +197,8 @@ function PublicFooter() {
         ))}
       </div>
       <div className="border-t border-slate-100 py-5 text-center text-xs text-slate-400 dark:border-slate-900">
-        © {new Date().getFullYear()} CashAds · Built for members in Nigeria, Ghana, Kenya, South Africa,
-        India, the Philippines, Brazil and beyond.
+        © {new Date().getFullYear()} Lucrum · Built for members in Nigeria, Ghana, Kenya, South Africa, India,
+        the Philippines, Brazil and beyond.
       </div>
     </footer>
   );
@@ -589,7 +589,7 @@ export function AdminLayout() {
         >
           <div className="flex items-center justify-between px-3">
             <Link to="/admin" className="flex items-center gap-2 font-bold text-white">
-              <Shield className="size-5 text-brand-400" /> CashAds Ops
+              <Shield className="size-5 text-brand-400" /> Lucrum Ops
             </Link>
             <button className="lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu">
               <X className="size-5" />
@@ -630,7 +630,7 @@ export function AdminLayout() {
             <button onClick={() => setOpen(true)} aria-label="Open menu">
               <Menu className="size-5" />
             </button>
-            <span className="font-semibold">CashAds Ops</span>
+            <span className="font-semibold">Lucrum Ops</span>
           </header>
           <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
             <Suspense fallback={<PageSpinner />}>

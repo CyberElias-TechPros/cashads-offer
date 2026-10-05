@@ -1,5 +1,5 @@
 import { createHmac } from 'node:crypto';
-import { NG_BANKS, getPayoutMethod } from '@cashads/shared';
+import { NG_BANKS, getPayoutMethod } from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import { sha256, safeEqual } from '../../lib/crypto';
 
@@ -139,7 +139,7 @@ export function createPaystackProvider(secretKey: string, fetchImpl: typeof fetc
           method: 'POST',
           body: JSON.stringify({
             type: 'nuban',
-            name: input.recipientName ?? 'CashAds member',
+            name: input.recipientName ?? 'Lucrum member',
             account_number: input.details.accountNumber,
             bank_code: input.details.bankCode,
             currency: 'NGN',
@@ -164,7 +164,7 @@ export function createPaystackProvider(secretKey: string, fetchImpl: typeof fetc
           amount: Math.round(input.localAmount * 100), // kobo
           recipient: recipient.json.data.recipient_code,
           reference: input.reference,
-          reason: 'CashAds cash-out',
+          reason: 'Lucrum cash-out',
         }),
       });
       if (!transfer.ok || !transfer.json.data) {

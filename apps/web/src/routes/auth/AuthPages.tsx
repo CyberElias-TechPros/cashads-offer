@@ -18,7 +18,7 @@ import {
   type MeDTO,
   guessCountryFromTimezone,
   registerSchema,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import { Logo, LogoMark, SandboxBanner } from '../../components/brand';
 import { PageSpinner } from '../../components/layouts';
 import { Button, ButtonLink, Callout, Checkbox, Input, Select } from '../../components/ui';
@@ -35,7 +35,7 @@ export function AuthLayout() {
           <div className="bg-grid absolute inset-0 opacity-20" aria-hidden />
           <div className="relative">
             <Link to="/" className="flex items-center gap-2 text-lg font-bold">
-              <LogoMark className="size-8 ring-1 ring-white/20 rounded-[10px]" /> CashAds
+              <LogoMark className="size-8 ring-1 ring-white/20 rounded-[10px]" /> Lucrum
             </Link>
           </div>
           <div className="relative space-y-6">
@@ -179,7 +179,7 @@ export function Login() {
               size="sm"
               variant="outline"
               onClick={() => {
-                setEmail('demo@cashads.local');
+                setEmail('demo@lucrum.local');
                 setPassword('Demo-earner-2026');
               }}
             >
@@ -189,7 +189,7 @@ export function Login() {
               size="sm"
               variant="outline"
               onClick={() => {
-                setEmail('admin@cashads.local');
+                setEmail('admin@lucrum.local');
                 setPassword('Admin-demo-2026');
               }}
             >
@@ -257,7 +257,7 @@ export function Signup() {
     country: guessCountryFromTimezone(tz),
     referralCode:
       params.get('ref') ??
-      (typeof localStorage !== 'undefined' ? (localStorage.getItem('cashads.ref') ?? '') : ''),
+      (typeof localStorage !== 'undefined' ? (localStorage.getItem('lucrum.ref') ?? '') : ''),
     acceptTerms: false,
     confirmAdult: false,
   }));
@@ -286,7 +286,7 @@ export function Signup() {
     try {
       const res = await post<{ user: MeDTO }>('/auth/register', parsed.data);
       try {
-        localStorage.removeItem('cashads.ref');
+        localStorage.removeItem('lucrum.ref');
       } catch {
         /* ignore */
       }

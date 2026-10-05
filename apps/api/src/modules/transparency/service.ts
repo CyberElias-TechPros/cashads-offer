@@ -9,7 +9,7 @@ import {
   PAYOUT_METHODS,
   getCountry,
   getPayoutMethod,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import { jobs, networks, offers, payouts, users } from '../../db/schema';
 import { filterAndSort, networkReliability, toOfferDTO } from '../offers/service';

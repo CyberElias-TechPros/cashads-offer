@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-# CashAds — single deployable: Fastify API + built web app (served by the API).
+# Lucrum — single deployable: Fastify API + built web app (served by the API).
 
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
@@ -24,7 +24,7 @@ COPY package.json package-lock.json ./
 COPY packages/shared/package.json packages/shared/
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
-RUN npm ci --omit=dev --workspace @cashads/api --include-workspace-root=false --no-audit --no-fund && npm cache clean --force
+RUN npm ci --omit=dev --workspace @lucrum/api --include-workspace-root=false --no-audit --no-fund && npm cache clean --force
 COPY --from=build /app/apps/api/dist apps/api/dist
 COPY --from=build /app/apps/api/drizzle apps/api/drizzle
 COPY --from=build /app/apps/web/dist apps/web/dist

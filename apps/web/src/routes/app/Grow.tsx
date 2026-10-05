@@ -11,7 +11,7 @@ import {
   type TierProgressDTO,
   formatUsd,
   parseDollarInput,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import {
   Badge,
   Button,
@@ -38,11 +38,11 @@ export function Referrals() {
     queryFn: () => get<ReferralDTO>('/referrals'),
   });
   if (isLoading || !data) return <Skeleton className="h-96" />;
-  const message = `I’m earning real cash for short tasks on CashAds — no points, cash out from $0.01. Join with my link and we both get ${formatUsd(data.bonusMicros)}: ${data.link}`;
+  const message = `I’m earning real cash for short tasks on Lucrum — no points, cash out from $0.01. Join with my link and we both get ${formatUsd(data.bonusMicros)}: ${data.link}`;
   const share = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'CashAds', text: message, url: data.link });
+        await navigator.share({ title: 'Lucrum', text: message, url: data.link });
       } catch {
         /* cancelled */
       }
@@ -96,7 +96,7 @@ export function Referrals() {
             </Button>
           </div>
           <Callout tone="info" className="mt-5">
-            Bonuses are paid by CashAds — never taken from your friend. Self-referrals (same device or payout
+            Bonuses are paid by Lucrum — never taken from your friend. Self-referrals (same device or payout
             account) are detected and don’t pay.
           </Callout>
         </Card>

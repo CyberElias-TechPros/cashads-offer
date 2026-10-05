@@ -17,7 +17,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
     sections: [
       {
         heading: '1. Who we are',
-        body: 'CashAds (“we”, “us”) operates a rewards platform where members earn money for completing tasks offered by third-party advertisers and networks. These terms form an agreement between you and CashAds.',
+        body: 'Lucrum (“we”, “us”) operates a rewards platform where members earn money for completing tasks offered by third-party advertisers and networks. These terms form an agreement between you and Lucrum.',
       },
       {
         heading: '2. Eligibility',
@@ -33,7 +33,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
       },
       {
         heading: '5. Cash-outs',
-        body: 'There is no CashAds minimum cash-out. Third-party provider fees and floors are displayed before you confirm. We may verify your email, phone or identity before processing a cash-out, as described in our Earnings Policy.',
+        body: 'There is no Lucrum minimum cash-out. Third-party provider fees and floors are displayed before you confirm. We may verify your email, phone or identity before processing a cash-out, as described in our Earnings Policy.',
       },
       {
         heading: '6. Account restrictions',
@@ -77,7 +77,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
       },
       {
         heading: 'Frameworks',
-        body: 'We design for the Nigeria Data Protection Act (NDPA) 2023, the EU/UK GDPR and the CCPA. Contact privacy@cashads.example for any request.',
+        body: 'We design for the Nigeria Data Protection Act (NDPA) 2023, the EU/UK GDPR and the CCPA. Contact privacy@lucrum.example for any request.',
       },
     ],
   },
@@ -89,7 +89,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
     sections: [
       {
         heading: 'Essential only by default',
-        body: 'We use one essential, HTTP-only session cookie to keep you signed in, and local storage for your preferences (theme, data-saver) and a random device identifier. No third-party advertising cookies are set by CashAds.',
+        body: 'We use one essential, HTTP-only session cookie to keep you signed in, and local storage for your preferences (theme, data-saver) and a random device identifier. No third-party advertising cookies are set by Lucrum.',
       },
       {
         heading: 'Advertiser pages',
@@ -105,7 +105,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
     sections: [
       {
         heading: 'Revenue share',
-        body: 'Members receive 60% of what networks pay CashAds for their completions. Bonuses are funded from our share. The live, measured figure is published on the Transparency page.',
+        body: 'Members receive 60% of what networks pay Lucrum for their completions. Bonuses are funded from our share. The live, measured figure is published on the Transparency page.',
       },
       {
         heading: 'Verification thresholds',
@@ -121,7 +121,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
       },
       {
         heading: 'Reversals',
-        body: 'If an advertiser reverses a legitimate completion, CashAds absorbs the loss. We only reclaim funds when a completion is confirmed fraudulent.',
+        body: 'If an advertiser reverses a legitimate completion, Lucrum absorbs the loss. We only reclaim funds when a completion is confirmed fraudulent.',
       },
       {
         heading: 'Failed payouts',

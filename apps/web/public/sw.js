@@ -1,6 +1,6 @@
-/* CashAds service worker — app-shell caching for slow/flaky connections.
+/* Lucrum service worker — app-shell caching for slow/flaky connections.
  * Money data (/api) is NEVER cached: balances must always be live. */
-const VERSION = 'cashads-v1';
+const VERSION = 'lucrum-v1';
 const SHELL = ['/', '/favicon.svg', '/icon.svg', '/manifest.webmanifest', '/offline.html'];
 
 self.addEventListener('install', (event) => {

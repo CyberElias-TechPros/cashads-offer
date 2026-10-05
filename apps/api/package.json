@@ -1,8 +1,8 @@
 {
-  "name": "@cashads/api",
+  "name": "@lucrum/api",
   "version": "0.1.0",
   "private": true,
-  "description": "CashAds API — modular monolith (auth, offers, postbacks, ledger, payouts, fraud, claims, referrals, admin).",
+  "description": "Lucrum API — modular monolith (auth, offers, postbacks, ledger, payouts, fraud, claims, referrals, admin).",
   "type": "module",
   "scripts": {
     "dev": "tsx watch --clear-screen=false src/server.ts",
@@ -16,7 +16,7 @@
     "db:reset": "tsx src/seed/cli.ts --reset"
   },
   "dependencies": {
-    "@cashads/shared": "*",
+    "@lucrum/shared": "*",
     "@electric-sql/pglite": "^0.5.8",
     "@fastify/cookie": "^11.1.2",
     "@fastify/helmet": "^13.1.1",

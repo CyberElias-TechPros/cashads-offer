@@ -58,7 +58,7 @@ export async function notify(ctx: AppContext, db: DbOrTx, userId: string, n: Not
         userId,
         to: user.email,
         subject: n.email.subject ?? n.title,
-        body: `${n.body}${n.email.extra ? `\n\n${n.email.extra}` : ''}\n\n— CashAds`,
+        body: `${n.body}${n.email.extra ? `\n\n${n.email.extra}` : ''}\n\n— Lucrum`,
         meta: { notificationType: n.type, link: n.link ?? null },
       });
     }

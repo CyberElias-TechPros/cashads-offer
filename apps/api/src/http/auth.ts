@@ -1,7 +1,7 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
-import type { Role } from '@cashads/shared';
+import type { Role } from '@lucrum/shared';
 import type { AppContext } from '../context';
 import type { DbOrTx } from '../db/client';
 import { devices, sessions, users } from '../db/schema';

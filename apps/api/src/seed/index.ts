@@ -6,7 +6,7 @@ import {
   payoutMethodsForCountry,
   splitByBps,
   usd,
-} from '@cashads/shared';
+} from '@lucrum/shared';
 import type { AppContext } from '../context';
 import type { DbOrTx } from '../db/client';
 import {
@@ -418,7 +418,7 @@ export async function seedDemo(ctx: AppContext): Promise<boolean> {
     passwordHash: adminHash,
     country: 'NG',
     role: 'admin',
-    displayName: 'CashAds Ops',
+    displayName: 'Lucrum Ops',
     emailVerifiedAt: new Date(now - 60 * DAY),
     createdAt: new Date(now - 60 * DAY),
     isDemo: true,
@@ -430,7 +430,7 @@ export async function seedDemo(ctx: AppContext): Promise<boolean> {
     const ageDays = 3 + Math.floor(rand() * 38);
     const optIn = rand() < 0.45;
     const u = await insertUser(db, {
-      email: `${name.toLowerCase()}.${i}@demo.cashads.local`,
+      email: `${name.toLowerCase()}.${i}@demo.lucrum.local`,
       country,
       displayName: optIn ? `${name} ${String.fromCharCode(65 + Math.floor(rand() * 26))}.` : null,
       prefs: { ...DEFAULT_PREFS, leaderboardOptIn: optIn, showOnPayoutWall: optIn },
@@ -521,7 +521,7 @@ export async function seedDemo(ctx: AppContext): Promise<boolean> {
     type: 'bonus_first_task',
     userId: demo.id,
     idempotencyKey: `first_task:${demo.id}`,
-    description: 'First-task bonus — welcome to CashAds!',
+    description: 'First-task bonus — welcome to Lucrum!',
     at: new Date(demoCreated.getTime() + 1.6 * DAY),
     entries: [
       { account: SYS.bonusExpense, direction: 'debit', amount: settings.firstTaskBonusMicros },

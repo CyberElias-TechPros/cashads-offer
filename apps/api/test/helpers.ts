@@ -1,6 +1,6 @@
 import { and, desc, eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
-import type { Settings } from '@cashads/shared';
+import type { Settings } from '@lucrum/shared';
 import { buildApp } from '../src/app';
 import { loadConfig } from '../src/config';
 import type { AppContext } from '../src/context';
@@ -78,7 +78,7 @@ export class Client {
       payload: body === undefined ? undefined : (body as never),
       remoteAddress: this.ip,
       headers: {
-        'x-requested-with': 'cashads',
+        'x-requested-with': 'lucrum',
         'x-device-id': this.deviceId,
         'user-agent': 'Mozilla/5.0 (Linux; Android 14) Chrome/130.0 Mobile',
         ...(this.cookie ? { cookie: this.cookie } : {}),
