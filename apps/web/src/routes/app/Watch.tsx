@@ -15,6 +15,8 @@ import {
 import { ApiError, errorMessage, get, post } from '../../lib/api';
 import { qk } from '../../lib/queries';
 import { cn } from '../../lib/utils';
+import { BoostCard } from '../../components/boostCard';
+import { PartnerVideos } from '../../components/partnerAds';
 import { toast } from '../../store/ui';
 
 type Phase = 'ready' | 'loading' | 'playing' | 'paused' | 'confirming' | 'rewarded' | 'rejected';
@@ -77,6 +79,7 @@ export function Watch() {
         res.status === 'rewarded' ? 'rewarded' : res.status === 'verifying' ? 'confirming' : 'rejected',
       );
       qc.invalidateQueries({ queryKey: qk.wallet });
+      qc.invalidateQueries({ queryKey: qk.boosts });
     } catch (err) {
       setSession({ ...s, status: 'rejected', rejectionReason: errorMessage(err) });
       setPhase('rejected');
@@ -158,6 +161,23 @@ export function Watch() {
         setOtherDevice(String(err.details?.deviceLabel ?? 'another device'));
       else toast.error('Couldn’t start the video', errorMessage(err));
     }
+  };
+
+  /** Plays an already-created session (boost videos arrive pre-created). */
+  const startWith = async (creative: AdCreativeDTO, s: AdSessionDTO) => {
+    setOtherDevice(null);
+    setSlow(false);
+    creativeRef.current = creative;
+    timeRef.current = 0;
+    quartiles.current = new Set();
+    setMediaTime(0);
+    sessionRef.current = s;
+    setSession(s);
+    setPhase('loading');
+    await new Promise((r) => setTimeout(r, 600));
+    await send('loaded');
+    await send('started');
+    play();
   };
 
   const reset = async () => {
@@ -319,6 +339,8 @@ export function Watch() {
           </Callout>
         </>
       )}
+      <BoostCard onWatchInline={startWith} />
+      <PartnerVideos />
       <Modal
         open={Boolean(otherDevice)}
         onClose={() => setOtherDevice(null)}

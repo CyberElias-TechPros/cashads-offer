@@ -1,9 +1,12 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
+  type AdsNetworkDTO,
   type BalancesDTO,
+  type BoostStatusDTO,
   type FeedItemDTO,
   type MeDTO,
+  type NetworkDTO,
   type PublicConfigDTO,
   formatLocal,
   formatUsd,
@@ -17,6 +20,9 @@ export const qk = {
   config: ['config'] as const,
   wallet: ['wallet'] as const,
   notifications: ['notifications'] as const,
+  networks: ['networks'] as const,
+  adsNetworks: ['adsNetworks'] as const,
+  boosts: ['boosts'] as const,
 };
 
 export function useMe() {
@@ -41,6 +47,36 @@ export function useWallet(enabled = true) {
     queryFn: () => get<BalancesDTO>('/wallet'),
     enabled,
     refetchInterval: 60_000,
+  });
+}
+
+/** Connected offerwall / survey networks available to the member (geo-filtered). */
+export function useNetworks(enabled = true) {
+  return useQuery({
+    queryKey: qk.networks,
+    queryFn: () => get<{ networks: NetworkDTO[] }>('/networks').then((r) => r.networks),
+    enabled,
+    staleTime: 5 * 60_000,
+  });
+}
+
+/** Partner rewarded-video networks available on this device (native SDK, SSV-verified). */
+export function useAdsNetworks(enabled = true) {
+  return useQuery({
+    queryKey: qk.adsNetworks,
+    queryFn: () => get<{ networks: AdsNetworkDTO[] }>('/ads/networks').then((r) => r.networks),
+    enabled,
+    staleTime: 5 * 60_000,
+  });
+}
+
+/** Earning-rate boost status (ad-funded + referral boosts). */
+export function useBoosts(enabled = true) {
+  return useQuery({
+    queryKey: qk.boosts,
+    queryFn: () => get<BoostStatusDTO>('/boosts'),
+    enabled,
+    staleTime: 15_000,
   });
 }
 

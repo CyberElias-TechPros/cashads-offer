@@ -140,6 +140,17 @@ Legend: ✅ built · 🧪 built against a simulated provider (sandbox) — swap 
 | Light leaderboards (“top 15% this week”)                      | ✅ opt-in names, percentile, no prizes                                |
 | Behavioural retargeting (“the reward you missed is waiting”)  | ✅ in-app “awaiting confirmation” prompts, auto-claims                |
 
+## Rate monetization (earning boosts)
+
+| Mechanic                                                              | Status                                                                                                                                        |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ad-funded boost: watch one ad → +N daily video slots                  | ✅ `POST /api/boosts/ad/start` (partner SDK video on Android, in-app video on web), slots granted on SSV reward (`earning_boosts`, kind `ad`) |
+| Referral boost: friend’s first earning → referrer +N slots for D days | ✅ granted in `onRefereeEarning` (`earning_boosts`, kind `referral`) + in-app notification                                                    |
+| Effective cap = base cap + boosted slots, clamped                     | ✅ `effectiveAdCap` (setting `boostMaxBonusSlots`), surfaced in `nextAd` and `GET /api/boosts`                                                |
+| Boost video rate limit per day                                        | ✅ `boostMaxAdPerDay` (default 3), enforced at session creation                                                                               |
+| Boost UI (status, active boosts, unlock button)                       | ✅ `BoostCard` on the Watch page (`apps/web/src/components/boostCard.tsx`)                                                                    |
+| Admin-tunable knobs                                                   | ✅ settings: `boostSlotsPerAd`, `boostMaxAdPerDay`, `boostMaxBonusSlots`, `boostReferralSlots`, `boostReferralDays`                           |
+
 ## Things the spec flagged “you didn’t ask about but need” (Part 14)
 
 | Area                                                                                                                                                         | Status                                        |

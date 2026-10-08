@@ -78,9 +78,11 @@ export const integrationRoutes: FastifyPluginAsyncZod = async (app) => {
           processingMs: Date.now() - started,
         });
       };
-      if (!network || !adapter || network.adapter !== 'pangle_ssv') return { isValid: false };
+      // SSV-capable dialects: sha256(secret:trans_id) family + URL-HMAC (AdMob-style).
+      if (!network || !adapter || !['pangle_ssv', 'hmacurl'].includes(network.adapter))
+        return { isValid: false };
       const secret = await getNetworkSecret(ctx.db, network.id);
-      if (!secret || !adapter.verify(pr, secret)) {
+      if (!secret || !adapter.verify(pr, secret, network)) {
         await log('rejected', 'bad_signature');
         return { isValid: false };
       }
@@ -90,7 +92,9 @@ export const integrationRoutes: FastifyPluginAsyncZod = async (app) => {
           .from(adSessions)
           .where(eq(adSessions.transId, pr.query.trans_id ?? ''))
       )[0];
-      if (!session || session.userId !== pr.query.user_id) {
+      // The trans_id lookup is the proof; the echoed user_id may be the member's id
+      // (web flow) or the opaque session token (native SDK flow) — both are accepted.
+      if (!session || (session.userId !== pr.query.user_id && session.transId !== pr.query.user_id)) {
         await log('rejected', 'unknown_session');
         return { isValid: false };
       }

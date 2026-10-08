@@ -37,6 +37,7 @@ import {
   OfferIcon,
   QualityBadge,
 } from '../../components/earn';
+import { OfferwallLauncher } from '../../components/offerwall';
 import {
   Badge,
   Button,
@@ -111,6 +112,7 @@ export function EarnPage() {
           </>
         }
       />
+      <OfferwallLauncher />
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="flex-1">
           <Input

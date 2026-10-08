@@ -447,6 +447,113 @@ export interface NetworkReliabilityDTO {
   status: string;
 }
 
+/* ── connected ad/offer networks (member-facing wall launcher) ─────────────── */
+
+export type NetworkKind = 'offerwall' | 'iframe_wall' | 'survey_wall' | 'ads' | 'native';
+
+/** What a network's inventory is made of. */
+export type NetworkCategory =
+  'surveys' | 'app_installs' | 'playtime' | 'signups' | 'financial' | 'video' | 'quizzes' | 'microtasks';
+
+export interface NetworkDTO {
+  id: string;
+  name: string;
+  kind: NetworkKind;
+  categories: NetworkCategory[];
+  /** ISO country codes with strong local inventory. Empty = global. */
+  regions: string[];
+  /** True when the wall can be embedded in-app (iframe); false = opens in the browser. */
+  embeddable: boolean;
+  /** Postback success rate over the last 30 days (null until there is data). */
+  postbackSuccessRate: number | null;
+  postbacks30d: number;
+}
+
+export interface NetworkWallDTO {
+  networkId: string;
+  networkName: string;
+  /** Our internal wall-session id (tracked server-side). */
+  sessionId: string;
+  /** Signed wall URL — carries an opaque session token, never the raw user id. */
+  url: string;
+  /** iframe = render inside Lucrum; external = open in the device browser (PWA escape). */
+  mode: 'iframe' | 'external';
+  expiresAt: ISODate;
+}
+
+export interface InterruptedSessionReportDTO {
+  ok: true;
+  logged: boolean;
+  guidance: string;
+}
+
+/* ── partner rewarded video (native SDK on Android, SSV-verified) ──────────── */
+
+/** Mobile-SDK credentials for a partner video network (public client credentials by design). */
+export interface AdsNetworkSdkDTO {
+  appId: string | null;
+  sdkKey: string | null;
+  adUnitId: string | null;
+}
+
+/** A rewarded-video network the member can watch on this device. */
+export interface AdsNetworkDTO {
+  id: string;
+  name: string;
+  categories: NetworkCategory[];
+  /** ISO country codes with strong inventory. Empty = global. */
+  regions: string[];
+  /** Honest user-facing reward estimate for one video. */
+  rewardMicros: number;
+  sdk: AdsNetworkSdkDTO;
+}
+
+/** A started partner video session: the web/native side plays it, the network SSV-credits it. */
+export interface PartnerSessionDTO {
+  session: AdSessionDTO;
+  /** Opaque id handed to the network SDK as its SSV user id — never the raw user id. */
+  transId: string;
+  networkId: string;
+  networkName: string;
+}
+
+/* ── earning-rate boosts (ad-funded + referral) ────────────────────────────── */
+
+export type BoostKind = 'ad' | 'referral';
+
+/** An active earning-rate boost: extra daily video slots until it expires. */
+export interface BoostDTO {
+  id: string;
+  kind: BoostKind;
+  bonusSlots: number;
+  expiresAt: string;
+  label: string;
+}
+
+export interface BoostStatusDTO {
+  baseAdCap: number;
+  bonusSlots: number;
+  effectiveAdCap: number;
+  videosUsedToday: number;
+  videosRemainingToday: number;
+  active: BoostDTO[];
+  boostsUsedToday: number;
+  boostsRemainingToday: number;
+  slotsPerBoostAd: number;
+}
+
+/** A started boost video: watch it to the end and the slots are unlocked. */
+export interface BoostStartDTO {
+  kind: 'inline' | 'partner';
+  session: AdSessionDTO;
+  /** Inline (web player) sessions carry the creative to play. */
+  creative?: AdCreativeDTO;
+  transId: string;
+  networkId?: string;
+  networkName?: string;
+  boost: { slots: number; expiresAt: string };
+}
+
 export interface WallOfShameDTO {
   id: string;
   title: string;

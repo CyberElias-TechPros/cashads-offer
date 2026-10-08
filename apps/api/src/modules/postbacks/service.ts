@@ -1,6 +1,6 @@
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import type { AppContext } from '../../context';
-import { networks, offerClicks, offers, postbackLogs, users } from '../../db/schema';
+import { networks, offerClicks, offers, postbackLogs, users, wallSessions } from '../../db/schema';
 import { AppError } from '../../lib/errors';
 import { ipInCidr } from '../../lib/net';
 import {
@@ -106,7 +106,7 @@ export async function handlePostback(
   const ids = { networkTxnId: parsed.networkTxnId, clickId: parsed.clickId, userId: parsed.userRef };
 
   const secret = await getNetworkSecret(ctx.db, network.id);
-  const signatureValid = secret ? adapter.verify(req, secret) : false;
+  const signatureValid = secret ? adapter.verify(req, secret, network) : false;
   if (!signatureValid) {
     return finish('rejected', 'invalid', {
       ...ids,
@@ -166,6 +166,29 @@ interface ProcessResult {
   message?: string;
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Resolve a postback's user reference. Click-tracked offers pass the user UUID as
+ * subId; wall networks only ever see the opaque wall-session token, which maps
+ * back to the user through `wall_sessions`.
+ */
+async function resolveUserRef(
+  db: AppContext['db'],
+  networkId: string,
+  ref: string,
+): Promise<{ userId: string; wallSession: typeof wallSessions.$inferSelect | null } | null> {
+  if (UUID_RE.test(ref)) {
+    const u = await db.select({ id: users.id }).from(users).where(eq(users.id, ref));
+    return u[0] ? { userId: u[0].id, wallSession: null } : null;
+  }
+  const s = await db
+    .select()
+    .from(wallSessions)
+    .where(and(eq(wallSessions.sessionToken, ref), eq(wallSessions.networkId, networkId)));
+  return s[0] ? { userId: s[0].userId, wallSession: s[0] } : null;
+}
+
 async function processParsed(
   ctx: AppContext,
   networkId: string,
@@ -186,18 +209,24 @@ async function processParsed(
   let click: typeof offerClicks.$inferSelect | null = null;
   let offer: typeof offers.$inferSelect | null = null;
   let userId: string | null = null;
+  let wallSession: typeof wallSessions.$inferSelect | null = null;
 
   if (p.clickId) {
     const rows = await ctx.db.select().from(offerClicks).where(eq(offerClicks.id, p.clickId));
     click = rows[0] ?? null;
     if (!click)
       return { outcome: 'rejected', errorCode: 'unknown_click', message: `Click ${p.clickId} not found` };
-    if (p.userRef && p.userRef !== click.userId)
+    if (p.userRef && UUID_RE.test(p.userRef) && p.userRef !== click.userId)
       return { outcome: 'rejected', errorCode: 'user_mismatch', message: 'Click belongs to another user' };
     userId = click.userId;
     offer = (await ctx.db.select().from(offers).where(eq(offers.id, click.offerId)))[0] ?? null;
   } else if (p.userRef) {
-    userId = p.userRef;
+    // The ref is either a user UUID (click-tracked offers pass it as subId) or an
+    // opaque wall-session token handed out by openWallSession.
+    const resolved = await resolveUserRef(ctx.db, networkId, p.userRef);
+    if (!resolved) return { outcome: 'rejected', errorCode: 'unknown_user', message: 'User not found' };
+    userId = resolved.userId;
+    wallSession = resolved.wallSession;
     if (p.networkOfferId) {
       offer =
         (
@@ -254,6 +283,12 @@ async function processParsed(
     title: p.title,
     postbackLogId: logId,
   });
+  if (wallSession && !res.duplicate) {
+    await ctx.db
+      .update(wallSessions)
+      .set({ conversions: sql`${wallSessions.conversions} + 1` })
+      .where(eq(wallSessions.id, wallSession.id));
+  }
   return { outcome: res.duplicate ? 'duplicate' : 'credited', conversionId: res.conversionId };
 }
 

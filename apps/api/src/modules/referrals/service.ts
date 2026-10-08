@@ -5,6 +5,7 @@ import type { DbOrTx } from '../../db/client';
 import { devices, ledgerEntries, ledgerTransactions, referrals, users } from '../../db/schema';
 import type { ClientInfo, UserRow } from '../../http/auth';
 import { maskEmail } from '../../lib/net';
+import { grantReferralBoost } from '../boosts/service';
 import { recordSignal } from '../fraud/service';
 import { notify } from '../platform/messaging';
 import { SYS, postTransaction, userAccountCode } from '../wallet/ledger';
@@ -106,6 +107,16 @@ export async function onRefereeEarning(
           link: '/app/referrals',
         });
         ctx.events.toUser(uid, 'balance', { reason: 'bonus_referral' });
+      }
+      // Referral-powered earning boost: the referrer unlocks extra daily video
+      // slots for a few days (idempotent per referred friend).
+      if (await grantReferralBoost(ctx, db, referrer.id, refereeId)) {
+        await notify(ctx, db, referrer.id, {
+          type: 'boost_referral',
+          title: `+${settings.boostReferralSlots} videos/day for ${settings.boostReferralDays} days`,
+          body: `Your friend completed their first task — your daily video cap just went up. Watch on the Videos page.`,
+          link: '/app/watch',
+        });
       }
       await ctx.jobs.enqueue(db, 'engagement.achievements', { userId: referrer.id });
     }

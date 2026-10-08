@@ -12,12 +12,23 @@ import { badRequest } from '../../lib/errors';
  *  • bitlabs    — HEX HMAC-SHA1 of the full callback URL, appended as &hash=
  *                 (developer.bitlabs.ai "Securing callbacks through hashing").
  *  • md5wall    — the common "subId/transId/reward/signature/status" family
- *                 (Primewall/Elitewall style): md5(subId + transId + reward + secret),
- *                 status 1 = credit, 2 = chargeback.
+ *                 (AdGate Media, Primewall/Elitewall style):
+ *                 md5(subId + transId + reward + secret), status 1 = credit, 2 = chargeback.
+ *  • cpx        — CPX Research: md5(`${trans_id}-${user_id}-${amount}-${secret}`),
+ *                 status 1 = credit, 2 = reversal.
+ *  • hmacq      — generic HMAC-SHA256 over the sorted query string (minus `sig`);
+ *                 the Tapjoy-style family used by most modern offerwalls.
+ *  • hmacurl    — HMAC over the full callback URL minus the signature param
+ *                 (BitLabs-style; hash algo + param name configurable per network,
+ *                 used for AdMob SSV with sha256).
  *  • pangle_ssv — rewarded-video server-side verification as in the spec:
  *                 sign = sha256(appSecurityKey:transId) → respond {"isValid": true}.
+ *  • unsigned   — no signature: a static shared token (query param or bearer) plus
+ *                 a mandatory IP allowlist. Weakest dialect — only for networks
+ *                 that offer no signing; see docs/networks.md.
  *
- * Adding a network = one object here + a row in `networks`.
+ * Adding a network = one object here + an entry in the catalog
+ * (modules/networks/catalog.ts); rows land in `networks` via syncNetworkCatalog.
  */
 
 export interface PostbackRequest {
@@ -54,9 +65,11 @@ export interface ConversionCheck {
   kind?: 'complete' | 'screenout';
 }
 
+export type NetworkRow = typeof networks.$inferSelect;
+
 export interface NetworkAdapter {
   id: string;
-  verify(req: PostbackRequest, secret: string): boolean;
+  verify(req: PostbackRequest, secret: string, network?: NetworkRow): boolean;
   parse(req: PostbackRequest): ParsedPostback;
   respond(outcome: PostbackOutcome): { status: number; body: string | Record<string, unknown> };
   /** Max age (seconds) of a signed timestamp before we treat it as a replay. */
@@ -85,6 +98,15 @@ function required(q: Record<string, string>, key: string): string {
   const v = q[key];
   if (v === undefined || v === '') throw badRequest('MALFORMED', `Missing parameter "${key}"`);
   return v;
+}
+
+/** First present, non-empty parameter among `keys` (throws when none is present). */
+function firstOf(q: Record<string, string>, keys: string[]): string {
+  for (const k of keys) {
+    const v = q[k];
+    if (v !== undefined && v !== '') return v;
+  }
+  throw badRequest('MALFORMED', `Missing parameter (expected one of: ${keys.join(', ')})`);
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -117,7 +139,9 @@ const sandboxnet: NetworkAdapter = {
     return {
       networkTxnId: required(q, 'txn_id'),
       clickId: asUuid(q.click_id),
-      userRef: asUuid(q.user_id),
+      // Raw ref: a user UUID for click-tracked offers, or an opaque wall-session
+      // token for wall networks — processParsed resolves either.
+      userRef: q.user_id ?? null,
       networkOfferId: q.offer_id ?? null,
       payoutMicros: Math.abs(decimalToMicros(required(q, 'payout'))),
       status: status === '2' ? 'reversal' : status === '3' ? 'screenout' : 'credit',
@@ -170,7 +194,7 @@ const bitlabs: NetworkAdapter = {
     return {
       networkTxnId: required(q, 'tx'),
       clickId: asUuid(q.click_id),
-      userRef: asUuid(required(q, 'uid')),
+      userRef: q.uid ?? null,
       networkOfferId: q.offer_id ?? null,
       payoutMicros: Math.abs(raw),
       status:
@@ -185,25 +209,176 @@ const bitlabs: NetworkAdapter = {
   },
 };
 
-/* ── md5 offerwall family ──────────────────────────────────────────────────── */
+/* ── md5 offerwall family (AdGate Media & friends) ─────────────────────────── */
 
 const md5wall: NetworkAdapter = {
   id: 'md5wall',
   verify(req, secret) {
     const q = req.query;
-    const expected = md5(`${q.subId ?? ''}${q.transId ?? ''}${q.reward ?? ''}${secret}`);
+    const reward = q.reward ?? q.payout ?? q.amount ?? '';
+    const expected = md5(`${q.subId ?? ''}${q.transId ?? ''}${reward}${secret}`);
     return safeEqual((q.signature ?? '').toLowerCase(), expected);
   },
   parse(req) {
     const q = req.query;
     return {
-      networkTxnId: required(q, 'transId'),
+      networkTxnId: firstOf(q, ['transId', 'trans_id', 'transaction_id']),
       clickId: asUuid(q.click_id ?? q.subId2),
-      userRef: asUuid(required(q, 'subId')),
+      userRef: q.subId ?? null,
       networkOfferId: q.campaign_id ?? null,
-      payoutMicros: Math.abs(decimalToMicros(required(q, 'payout'))),
+      payoutMicros: Math.abs(decimalToMicros(firstOf(q, ['payout', 'reward', 'amount']))),
       status: q.status === '2' ? 'reversal' : 'credit',
       title: q.offerName ? decodeURIComponent(q.offerName) : 'Partner offer',
+    };
+  },
+  respond(outcome) {
+    return outcome === 'error'
+      ? { status: 500, body: '0' }
+      : { status: outcome === 'invalid' ? 403 : 200, body: outcome === 'invalid' ? '0' : '1' };
+  },
+};
+
+/* ── CPX Research ──────────────────────────────────────────────────────────── */
+
+const cpx: NetworkAdapter = {
+  id: 'cpx',
+  verify(req, secret) {
+    const q = req.query;
+    const expected = md5(`${q.trans_id ?? ''}-${q.user_id ?? ''}-${q.amount ?? ''}-${secret}`);
+    return safeEqual((q.hash ?? '').toLowerCase(), expected);
+  },
+  parse(req) {
+    const q = req.query;
+    return {
+      networkTxnId: required(q, 'trans_id'),
+      clickId: asUuid(q.click_id),
+      userRef: q.user_id ?? null,
+      networkOfferId: q.offer_id ?? null,
+      payoutMicros: Math.abs(decimalToMicros(required(q, 'amount'))),
+      status: q.status === '2' ? 'reversal' : 'credit',
+      title: q.survey_name ? `CPX survey (${q.survey_name})` : 'CPX Research survey',
+    };
+  },
+  respond(outcome) {
+    return outcome === 'error'
+      ? { status: 500, body: '0' }
+      : { status: outcome === 'invalid' ? 403 : 200, body: outcome === 'invalid' ? '0' : '1' };
+  },
+};
+
+/* ── generic HMAC-SHA256 over sorted query (Tapjoy-style) ──────────────────── */
+
+export function hmacqCanonical(params: Record<string, string>, sigParam = 'sig'): string {
+  return Object.keys(params)
+    .filter((k) => k !== sigParam)
+    .sort()
+    .map((k) => `${k}=${params[k]}`)
+    .join('&');
+}
+
+/** Parse a `ts` param that may be seconds or milliseconds into unix seconds. */
+function tsSeconds(v: string | undefined): number | undefined {
+  if (!v) return undefined;
+  const n = Number(v);
+  if (!Number.isFinite(n) || n <= 0) return undefined;
+  return n < 1e12 ? n : Math.round(n / 1000);
+}
+
+const hmacq: NetworkAdapter = {
+  id: 'hmacq',
+  freshnessSeconds: 600,
+  verify(req, secret) {
+    const sig = req.query.sig ?? req.query.signature ?? '';
+    return safeEqual(sig.toLowerCase(), hmacHex('sha256', secret, hmacqCanonical(req.query)).toLowerCase());
+  },
+  parse(req) {
+    const q = req.query;
+    return {
+      networkTxnId: firstOf(q, ['txn_id', 'trans_id', 'transId', 'transaction_id']),
+      clickId: asUuid(q.click_id ?? q.clickId ?? q.sub_id2),
+      userRef: q.user_id ?? q.userId ?? q.subId ?? null,
+      networkOfferId: q.offer_id ?? q.campaign_id ?? null,
+      payoutMicros: Math.abs(decimalToMicros(firstOf(q, ['payout', 'amount', 'reward']))),
+      status: q.status === '2' ? 'reversal' : 'credit',
+      timestamp: tsSeconds(q.ts ?? q.timestamp),
+      title: q.offer_name ? decodeURIComponent(q.offer_name) : 'Partner task',
+    };
+  },
+  respond(outcome) {
+    return outcome === 'error'
+      ? { status: 500, body: '0' }
+      : { status: outcome === 'invalid' ? 403 : 200, body: outcome === 'invalid' ? '0' : '1' };
+  },
+};
+
+/* ── HMAC over the full callback URL (BitLabs-style; AdMob SSV) ────────────── */
+
+const hmacurl: NetworkAdapter = {
+  id: 'hmacurl',
+  verify(req, secret, network) {
+    const cfg = (network?.config ?? {}) as Record<string, unknown>;
+    const sigParam = String(cfg.sigParam ?? 'signature');
+    const algo: 'sha1' | 'sha256' = cfg.hashAlgo === 'sha1' ? 'sha1' : 'sha256';
+    const given = req.query[sigParam] ?? '';
+    if (!given) return false;
+    // Remove the signature parameter (and its separator) from the URL, then HMAC the rest.
+    const ampMarker = `&${sigParam}=`;
+    const qMarker = `?${sigParam}=`;
+    let base = req.fullUrl;
+    const ampIdx = base.lastIndexOf(ampMarker);
+    const qIdx = base.indexOf(qMarker);
+    if (ampIdx !== -1) {
+      const rest = base.slice(ampIdx + ampMarker.length);
+      const amp = rest.indexOf('&');
+      base = base.slice(0, ampIdx) + (amp === -1 ? '' : rest.slice(amp));
+    } else if (qIdx !== -1) {
+      const rest = base.slice(qIdx + qMarker.length);
+      const amp = rest.indexOf('&');
+      base = base.slice(0, qIdx) + (amp === -1 ? '' : rest.slice(amp));
+    } else {
+      return false;
+    }
+    return safeEqual(given.toLowerCase(), hmacHex(algo, secret, base).toLowerCase());
+  },
+  parse(req) {
+    const q = req.query;
+    return {
+      networkTxnId: firstOf(q, ['transaction_id', 'trans_id', 'txn_id', 'tx']),
+      clickId: asUuid(q.click_id ?? q.custom_data),
+      userRef: q.user_id ?? q.uid ?? null,
+      networkOfferId: q.reward_name ?? q.offer_id ?? null,
+      payoutMicros: Math.abs(decimalToMicros(firstOf(q, ['reward_amount', 'reward', 'payout', 'amount']))),
+      status: 'credit',
+      title: q.reward_type ? `Rewarded video (${q.reward_type})` : 'Rewarded video',
+    };
+  },
+  respond(outcome) {
+    if (outcome === 'error') return { status: 500, body: 'RETRY' };
+    if (outcome === 'invalid') return { status: 403, body: 'INVALID' };
+    return { status: 200, body: '' };
+  },
+};
+
+/* ── unsigned: static token + IP allowlist only (weakest dialect) ──────────── */
+
+const unsigned: NetworkAdapter = {
+  id: 'unsigned',
+  verify(req, secret) {
+    const bearer = req.headers.authorization?.replace(/^Bearer\s+/i, '') ?? '';
+    const token = req.query.token ?? req.query.secret ?? bearer;
+    if (!token) return false;
+    return safeEqual(token, secret);
+  },
+  parse(req) {
+    const q = req.query;
+    return {
+      networkTxnId: firstOf(q, ['transId', 'trans_id', 'txn_id', 'tx']),
+      clickId: asUuid(q.click_id ?? q.subId2),
+      userRef: q.subId ?? q.sub_id ?? q.user_id ?? null,
+      networkOfferId: q.campaign_id ?? q.offer_id ?? null,
+      payoutMicros: Math.abs(decimalToMicros(firstOf(q, ['reward', 'payout', 'amount']))),
+      status: q.status === '2' ? 'reversal' : 'credit',
+      title: q.offerName ? decodeURIComponent(q.offerName) : 'Partner task',
     };
   },
   respond(outcome) {
@@ -230,7 +405,7 @@ const pangleSsv: NetworkAdapter = {
     return {
       networkTxnId: required(q, 'trans_id'),
       clickId: asUuid(q.extra),
-      userRef: asUuid(required(q, 'user_id')),
+      userRef: required(q, 'user_id'),
       networkOfferId: q.reward_name ?? null,
       payoutMicros: 0,
       status: 'credit',
@@ -248,7 +423,11 @@ export const ADAPTERS: Record<string, NetworkAdapter> = {
   sandboxnet,
   bitlabs,
   md5wall,
+  cpx,
+  hmacq,
+  hmacurl,
   pangle_ssv: pangleSsv,
+  unsigned,
 };
 
 export function getAdapter(id: string): NetworkAdapter | undefined {

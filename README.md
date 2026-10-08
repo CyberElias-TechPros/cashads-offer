@@ -80,11 +80,12 @@ The sign-in page has one-tap buttons for both in sandbox mode.
 ### Useful scripts
 
 ```bash
-npm test              # 95 tests: 13 unit + 82 API (integration tests get their own in-memory Postgres per file)
+npm test              # unit + API tests (integration tests get their own in-memory Postgres per file)
 npm run typecheck     # strict TypeScript across all packages
 npm run build         # web (Vite) + API (tsup) production bundles
 npm run start         # production server: API + built web app on :4000
 npm run db:reset      # wipe the local database and reseed the sandbox
+npm run android -- sync   # build the web app and sync it into apps/android (Capacitor)
 ```
 
 ## Architecture
@@ -119,6 +120,15 @@ flowchart LR
   transparency, admin and the sandbox world. Postgres-backed job queue (`FOR UPDATE SKIP LOCKED`) as a transactional outbox.
 - **`apps/web`** — React 19 + React Router + TanStack Query + Zustand + Tailwind v4. Route-level code splitting, PWA
   manifest + service worker (never caches money data), dark mode, reduced-motion and data-saver modes.
+- **`apps/android`** — Capacitor shell over the PWA with a native bridge: GAID device id for ad-network attribution,
+  Custom Tabs browser-escape for offerwall tracking, and network info for data-saver mode. See
+  **[apps/android/README.md](apps/android/README.md)**.
+
+**Ad & offer networks** are catalog-driven: ~20 offerwall/survey/video networks (CPX Research, BitLabs, Tapjoy,
+Adjoe, AdGem, Lootably, Monlix, Adscend, RevU, Ayet, AdGate, UndrAds, Notik, TimeWall, Pollfish, AdMob, AppLovin,
+LevelPlay, InMobi, Meta FAN) connect by setting `LUCRUM_NET_*` env credentials — no code changes. Members open them
+from the Earn page as tracked wall sessions (opaque session tokens, S2S-verified postbacks, 30-day resolution window,
+interrupted-session logging when connections drop). Full guide: **[docs/networks.md](docs/networks.md)**.
 
 Deep dive: **[docs/architecture.md](docs/architecture.md)** · decisions: **[docs/adr](docs/adr)**.
 
@@ -153,5 +163,7 @@ and KYC vendors is covered step by step in **[docs/going-live.md](docs/going-liv
 - [Product spec (original research & requirements)](docs/product-spec.md)
 - [Spec traceability matrix](docs/spec-traceability.md)
 - [Architecture](docs/architecture.md)
+- [Ad & offer network integration guide](docs/networks.md)
 - [Going live](docs/going-live.md)
+- [Android app](apps/android/README.md)
 - [Architecture decision records](docs/adr)

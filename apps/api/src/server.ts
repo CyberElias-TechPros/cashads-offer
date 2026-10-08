@@ -3,6 +3,7 @@ import { loadConfig } from './config';
 import { createDatabase } from './db/client';
 import { startScheduler } from './jobs/handlers';
 import { configureEncryption } from './lib/crypto';
+import { syncNetworkCatalog } from './modules/networks/service';
 import { ensureEncryptionKeyMatches } from './modules/platform/keycheck';
 import { ensureSystemData, seedDemo } from './seed';
 
@@ -16,8 +17,14 @@ async function main(): Promise<void> {
   const { app, ctx } = await buildApp(config, database);
   await ctx.settings.load(ctx.db);
   await ensureSystemData(ctx);
+  // Real offerwall/survey/video networks: rows appear paused until their env
+  // credentials are set, then activate automatically on the next boot.
+  const catalog = await syncNetworkCatalog(ctx);
   await ctx.settings.load(ctx.db);
   if (config.SANDBOX_MODE && config.SEED_DEMO) await seedDemo(ctx);
+  if (catalog.created + catalog.activated + catalog.updated > 0) {
+    app.log.info({ ...catalog }, 'network catalog synced');
+  }
 
   let stopScheduler: (() => void) | null = null;
   if (config.WORKER_ENABLED) {

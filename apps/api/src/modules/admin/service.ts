@@ -33,6 +33,7 @@ import type { UserRow } from '../../http/auth';
 import { AppError, conflict, notFound } from '../../lib/errors';
 import { maskEmail } from '../../lib/net';
 import { recomputeScore, recordSignal, resolveFlag } from '../fraud/service';
+import { catalogEnvStatus, getCatalogEntry } from '../networks/catalog';
 import { refreshOfferStats } from '../offers/service';
 import { audit, notify } from '../platform/messaging';
 import { toPayoutDTO } from '../payouts/service';
@@ -913,11 +914,30 @@ export async function retryJob(ctx: AppContext, jobId: number): Promise<void> {
 
 export async function listNetworks(ctx: AppContext) {
   const rows = await ctx.db.select().from(networks);
-  return rows.map(({ secretEnc, ...n }) => ({
-    ...n,
-    secretConfigured: Boolean(secretEnc),
-    createdAt: n.createdAt.toISOString(),
-  }));
+  return rows.map(({ secretEnc, ...n }) => {
+    const catalog = getCatalogEntry(n.id);
+    return {
+      ...n,
+      secretConfigured: Boolean(secretEnc),
+      createdAt: n.createdAt.toISOString(),
+      // Catalog metadata: where to sign up, which env vars connect the network,
+      // and whether those env vars are set on this server.
+      catalog: catalog
+        ? {
+            signupUrl: catalog.signupUrl,
+            docsUrl: catalog.docsUrl,
+            postbackUrl: `/api/postback/${catalog.id}`,
+            ssvUrl: catalog.kind === 'ads' ? `/api/ssv/${catalog.id}` : null,
+            env: catalogEnvStatus(catalog),
+            regions: catalog.regions,
+            categories: catalog.categories,
+            signatureNote: catalog.signatureNote,
+            policyNote: catalog.policyNote ?? null,
+            policyRestricted: catalog.policyRestricted ?? false,
+          }
+        : null,
+    };
+  });
 }
 
 export async function patchNetwork(

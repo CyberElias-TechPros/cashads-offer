@@ -271,6 +271,12 @@ export const settingsSchema = z.object({
   adDailyCap: z.number().int().min(0).max(500),
   adComboBps: z.array(z.number().int().min(10_000).max(30_000)).min(1).max(10),
   adComboWindowMinutes: z.number().int().min(1).max(120),
+  /* earning-rate boosts (ad-funded + referral) */
+  boostSlotsPerAd: z.number().int().min(0).max(50),
+  boostMaxAdPerDay: z.number().int().min(0).max(10),
+  boostMaxBonusSlots: z.number().int().min(0).max(100),
+  boostReferralSlots: z.number().int().min(0).max(100),
+  boostReferralDays: z.number().int().min(1).max(30),
   payoutMaxPerDay: z.number().int().min(1).max(100),
   kycThresholdMicros: microsSchema.min(0),
   phoneRequiredAboveMicros: microsSchema.min(0),
@@ -367,4 +373,25 @@ export const adminFeatureStatusSchema = z.object({
 export const adminNetworkPatchSchema = z.object({
   status: z.enum(['active', 'paused']).optional(),
   ipAllowlist: z.array(z.string().max(64)).max(50).optional(),
+});
+
+/* ── offerwall sessions & connection resilience ───────────────────────────── */
+
+/** Client report: the connection dropped while a wall session was open. */
+export const interruptedSessionSchema = z.object({
+  sessionId: z.string().max(64).optional(),
+  networkId: z.string().max(40),
+  startedAt: z.string().max(40),
+  networkType: z.string().max(20).optional(),
+  reason: z.string().max(200).optional(),
+});
+
+/** Start a partner rewarded-video session (native SDK networks). */
+export const partnerSessionCreateSchema = z.object({
+  networkId: z.string().max(40),
+});
+
+/** Start a boost video (optionally via a native partner network). */
+export const boostStartSchema = z.object({
+  networkId: z.string().max(40).optional(),
 });

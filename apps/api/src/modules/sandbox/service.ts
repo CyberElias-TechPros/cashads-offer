@@ -1,6 +1,7 @@
 import { and, desc, eq } from 'drizzle-orm';
 import type { AppContext } from '../../context';
 import {
+  adCreatives,
   adSessions,
   kycSubmissions,
   networks,
@@ -187,11 +188,17 @@ export async function reverseSandboxConversion(
 export async function deliverSsvCallback(ctx: AppContext, sessionId: string): Promise<void> {
   const session = (await ctx.db.select().from(adSessions).where(eq(adSessions.id, sessionId)))[0];
   if (!session) return;
-  const network = (await ctx.db.select().from(networks).where(eq(networks.id, 'sandbox-ads')))[0];
-  if (!network?.secretEnc) throw new Error('SandboxAds has no secret');
+  // Simulate the callback for whichever network owns the session's creative — the
+  // default web flow uses SandboxAds; partner (native SDK) sessions use their own
+  // network row, exactly as a real network would call /api/ssv/<networkId>.
+  const creative = (await ctx.db.select().from(adCreatives).where(eq(adCreatives.id, session.creativeId)))[0];
+  const networkId = creative?.networkId ?? 'sandbox-ads';
+  const network = (await ctx.db.select().from(networks).where(eq(networks.id, networkId)))[0];
+  if (!network?.secretEnc) throw new Error(`${networkId} has no secret`);
   const secret = decrypt(network.secretEnc);
   const params = new URLSearchParams({
-    user_id: session.userId,
+    // The native SDK flow echoes the opaque session token as its user id.
+    user_id: session.transId,
     trans_id: session.transId,
     reward_amount: String(session.rewardMicros),
     reward_name: session.creativeId,
@@ -200,8 +207,8 @@ export async function deliverSsvCallback(ctx: AppContext, sessionId: string): Pr
   });
   const res = await ctx.selfRequest({
     method: 'GET',
-    url: `/api/ssv/sandbox-ads?${params.toString()}`,
-    headers: { 'user-agent': 'SandboxAds-SSV/1.0' },
+    url: `/api/ssv/${networkId}?${params.toString()}`,
+    headers: { 'user-agent': `${network.name}-SSV/1.0` },
   });
   if (res.statusCode >= 500) throw new Error(`SSV endpoint returned ${res.statusCode}`);
 }

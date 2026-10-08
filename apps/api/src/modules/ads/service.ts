@@ -1,13 +1,21 @@
 import { and, desc, eq, gt, inArray, sql } from 'drizzle-orm';
-import { type AdEventType, type AdNextDTO, type AdSessionDTO, splitByBps } from '@lucrum/shared';
+import {
+  type AdEventType,
+  type AdNextDTO,
+  type AdSessionDTO,
+  type PartnerSessionDTO,
+  splitByBps,
+} from '@lucrum/shared';
 import type { AppContext } from '../../context';
 import type { DbOrTx } from '../../db/client';
 import { adCreatives, adSessions, earningLocks, networks } from '../../db/schema';
 import type { ClientInfo, UserRow } from '../../http/auth';
 import { randomToken } from '../../lib/crypto';
-import { AppError, conflict, notFound, tooMany } from '../../lib/errors';
+import { AppError, badRequest, conflict, notFound, tooMany } from '../../lib/errors';
 import { DAY, MINUTE } from '../../lib/time';
 import { recordSignal } from '../fraud/service';
+import { boostAdsUsedToday, effectiveAdCap, grantBoostForSession } from '../boosts/service';
+import { partnerCreativeId } from '../networks/service';
 import { creditNative } from '../rewards/service';
 import { mergePrefs } from '../users/service';
 import { SYS, postTransaction, userAccountCode } from '../wallet/ledger';
@@ -111,12 +119,14 @@ export async function nextAd(ctx: AppContext, user: UserRow): Promise<AdNextDTO>
   const s = ctx.settings.get();
   const prefs = mergePrefs(user.prefs);
   const used = await rewardedLast24h(ctx.db, user.id);
+  // Active earning boosts raise today's cap (ad-funded / referral boosts).
+  const cap = await effectiveAdCap(ctx, user.id);
   const level = await comboLevel(ctx, ctx.db, user.id);
   const base: Omit<AdNextDTO, 'creative' | 'rewardMicros'> = {
     comboLevel: level,
     comboMultiplierBps: s.adComboBps[level] ?? 10_000,
-    remainingToday: Math.max(0, s.adDailyCap - used),
-    dailyCap: s.adDailyCap,
+    remainingToday: Math.max(0, cap - used),
+    dailyCap: cap,
     offersPayMoreHint: 'Honest maths: a 5-minute survey usually pays 50–100× more than a video.',
   };
   if (base.remainingToday === 0) return { ...base, creative: null, rewardMicros: 0 };
@@ -140,6 +150,9 @@ export async function nextAd(ctx: AppContext, user: UserRow): Promise<AdNextDTO>
   const counts = new Map(watched.map((w) => [w.creativeId, w.n]));
   const pool = creatives
     .map((r) => r.c)
+    // Partner creatives are served through the native SDK path (/ads/partner-sessions),
+    // never through the in-app web player.
+    .filter((c) => !c.id.startsWith('partner-'))
     .filter((c) => (!prefs.dataSaver || c.lite) && (counts.get(c.id) ?? 0) < 3)
     .sort((a, b) => (counts.get(a.id) ?? 0) - (counts.get(b.id) ?? 0) || Math.random() - 0.5);
   const creative = pool[0];
@@ -181,11 +194,18 @@ export async function createAdSession(
   client: ClientInfo,
   creativeId: string,
   takeover = false,
-): Promise<AdSessionDTO> {
+  boostSlots = 0,
+): Promise<AdSessionDTO & { transId: string }> {
   const s = ctx.settings.get();
   return ctx.db.transaction(async (tx) => {
-    if ((await rewardedLast24h(tx, user.id)) >= s.adDailyCap)
+    if (boostSlots > 0) {
+      // Boost videos sit on top of the daily cap (that is the product) but are
+      // themselves limited per day.
+      if ((await boostAdsUsedToday(tx, user.id)) >= s.boostMaxAdPerDay)
+        throw tooMany('Boost limit reached for today — it resets at midnight UTC.');
+    } else if ((await rewardedLast24h(tx, user.id)) >= s.adDailyCap) {
       throw tooMany('You’ve reached today’s video limit. Tasks and quick polls are still available!');
+    }
     const creative = (await tx.select().from(adCreatives).where(eq(adCreatives.id, creativeId)))[0];
     if (!creative || creative.status !== 'active') throw notFound('Video');
     await acquireEarningLock(tx, user.id, client, takeover);
@@ -200,11 +220,86 @@ export async function createAdSession(
         creativeId,
         deviceKey: client.deviceKey,
         transId: randomToken(18),
+        boostSlots,
         rewardMicros: splitByBps(creative.revenueMicros, s.revenueShareBps).share,
         expiresAt: new Date(Date.now() + creative.durationSeconds * 1000 + 10 * MINUTE),
       })
       .returning();
-    return toDTO(row!, creative.durationSeconds);
+    // transId travels to the ad network as its SSV user id — it is the member's own
+    // session token, safe to return to them.
+    return { ...toDTO(row!, creative.durationSeconds), transId: row!.transId };
+  });
+}
+
+/**
+ * Partner-network rewarded video (native SDK on Android). The session is created
+ * server-side with an honest pre-set reward; the network's signed SSV callback
+ * credits it — the client-side "I watched" signal alone never pays.
+ */
+export async function createPartnerSession(
+  ctx: AppContext,
+  user: UserRow,
+  client: ClientInfo,
+  networkId: string,
+  boostSlots = 0,
+): Promise<PartnerSessionDTO> {
+  const rows = await ctx.db.select().from(networks).where(eq(networks.id, networkId));
+  const network = rows[0];
+  if (!network || network.kind !== 'ads' || network.status !== 'active') throw notFound('Video network');
+  const cfg = network.config as Record<string, unknown>;
+  if (cfg.policyRestricted)
+    throw badRequest('NETWORK_UNAVAILABLE', 'This video network is not available for earning.');
+  const regions = Array.isArray(cfg.regions) ? (cfg.regions as string[]) : [];
+  if (regions.length > 0 && user.country && !regions.includes(user.country))
+    throw new AppError(403, 'NETWORK_GEO', 'This video network isn’t available in your country.');
+  const creativeId = partnerCreativeId(networkId);
+  const creative = (await ctx.db.select().from(adCreatives).where(eq(adCreatives.id, creativeId)))[0];
+  if (!creative || creative.status !== 'active') throw notFound('Video');
+  const session = await createAdSession(ctx, user, client, creativeId, false, boostSlots);
+  return { session, transId: session.transId, networkId: network.id, networkName: network.name };
+}
+
+/**
+ * The native SDK reports the video finished. Native ads have no web event chain to
+ * validate — the trusted signal is the network's signed SSV callback — so this marks
+ * the session 'verifying' (the same state the web flow reaches before SSV).
+ */
+export async function nativeCompleteAdSession(
+  ctx: AppContext,
+  user: UserRow,
+  client: ClientInfo,
+  sessionId: string,
+): Promise<AdSessionDTO> {
+  return ctx.db.transaction(async (tx) => {
+    const { session, duration } = await loadSession(tx, user.id, sessionId);
+    if (session.status === 'rewarded' || session.status === 'verifying') return toDTO(session, duration);
+    if (session.status !== 'created' && session.status !== 'playing')
+      throw conflict(
+        'SESSION_NOT_ACTIVE',
+        session.rejectionReason ?? 'This video session has ended. Start another one.',
+      );
+    if (session.expiresAt < new Date())
+      throw conflict('SESSION_EXPIRED', 'This video session expired. Start another one.');
+    if (!(await holdsLock(tx, user.id, client.deviceKey)))
+      throw conflict('EARNING_ON_OTHER_DEVICE', 'Another device took over earning.');
+    if (!session.creativeId.startsWith('partner-'))
+      throw badRequest('NOT_A_PARTNER_SESSION', 'This endpoint is only for partner-network videos.');
+    const level = await comboLevel(ctx, tx, user.id);
+    const [row] = await tx
+      .update(adSessions)
+      .set({ status: 'verifying', comboLevel: level, completedAt: new Date() })
+      .where(eq(adSessions.id, sessionId))
+      .returning();
+    if (ctx.config.SANDBOX_MODE) {
+      // Simulated network callback (production: the real network calls /api/ssv/<network>).
+      await ctx.jobs.enqueue(
+        tx,
+        'sandbox.ssv_callback',
+        { sessionId },
+        { delayMs: ctx.config.isTest ? 0 : 700 },
+      );
+    }
+    return toDTO(row!, duration);
   });
 }
 
@@ -390,8 +485,9 @@ export async function completeAdSession(
       })
       .where(eq(adSessions.id, sessionId))
       .returning();
-    if (ssv) {
-      // The ad network's server will call our SSV endpoint (simulated in sandbox mode).
+    if (ssv && ctx.config.SANDBOX_MODE) {
+      // The ad network's server will call our SSV endpoint (simulated in sandbox mode;
+      // in production the real network calls /api/ssv/<networkId> itself).
       await ctx.jobs.enqueue(
         tx,
         'sandbox.ssv_callback',
@@ -454,6 +550,8 @@ export async function creditAdSession(
       .update(adSessions)
       .set({ status: 'rewarded', bonusMicros: bonus, ledgerTxnId: txnId })
       .where(eq(adSessions.id, session.id));
+    // A rewarded boost video unlocks extra daily earning slots (idempotent).
+    await grantBoostForSession(tx, session);
     await ctx.jobs.enqueue(tx, 'earning.after', {
       userId: session.userId,
       kind: 'ad',
