@@ -34,28 +34,31 @@ cashads-offer/
 
 ## Domain modules (`apps/api/src/modules`)
 
-| Module              | Responsibility                                                                                                                  |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `wallet/ledger`     | Double-entry ledger: accounts, balanced transactions, idempotency, balance reads, history, invariants                           |
-| `auth`              | Registration, login (lockout), MFA (TOTP + recovery codes), email verification, password reset, sessions, phone OTP             |
-| `users`             | Profile, preferences, MeDTO, data export, account deletion (PII erasure, ledger retention)                                      |
-| `offers`            | Offerwall (geo, filters, hourly rate, quality), clicks, "I finished", activity, ratings, reports, daily plan                    |
-| `networks/adapters` | Postback dialects: sandboxnet (HMAC-SHA256 + timestamp), BitLabs (HMAC-SHA1 over URL), md5 walls (status 1/2), Pangle-style SSV |
-| `postbacks`         | Log-first pipeline: allowlist → parse → verify → replay window → resolve click → credit/reverse; admin replay                   |
-| `rewards`           | Revenue-share credit, reversals (absorb/clawback), goodwill, native sponsor rewards, auto-donation                              |
-| `claims`            | Missing Credit ladder, approvals/rejections, SLA sweep with auto-approval                                                       |
-| `payouts`           | Methods per country, quotes, destinations (encrypted, masked, name enquiry), requests, processing, retries, refunds             |
-| `payouts/providers` | Sandbox rails (latency, outages, failures) and the live Paystack adapter + webhook signature                                    |
-| `fraud`             | Explainable signals → score; automatic _pause_ (never automatic ban) at the block threshold                                     |
-| `ads`               | Rewarded video: inventory, sessions, event-chain verification, visible-time accounting, earning lock, SSV credit                |
-| `native`            | Quick polls ("while you wait") and earn-and-learn lessons                                                                       |
-| `engagement`        | Achievements, tiers, streaks (member's local midnight), leaderboard, earning velocity                                           |
-| `referrals`         | Attribution, self-dealing detection, two-sided bonus on qualification, residuals                                                |
-| `support`           | Tickets with SLAs, appeals (lift/uphold), community feature requests                                                            |
-| `finance`           | Charity, tax centre, KYC submissions and uploads                                                                                |
-| `transparency`      | Public stats, live payout feed, network reliability, Wall of Shame, status page                                                 |
-| `admin`             | Overview, analytics (unit economics + cohorts), members 360°, queues, offers, postbacks, audit, jobs                            |
-| `sandbox`           | The simulated outside world: offer network, ad network SSV, identity vendor, dev inbox                                          |
+| Module              | Responsibility                                                                                                                                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `wallet/ledger`     | Double-entry ledger: accounts, balanced transactions, idempotency, balance reads, history, invariants                                                                                                                                                               |
+| `auth`              | Registration, login (lockout), MFA (TOTP + recovery codes), email verification, password reset, sessions, phone OTP                                                                                                                                                 |
+| `users`             | Profile, preferences, MeDTO, data export, account deletion (PII erasure, ledger retention)                                                                                                                                                                          |
+| `offers`            | Offerwall (geo, filters, hourly rate, quality), clicks, "I finished", activity, ratings, reports, daily plan                                                                                                                                                        |
+| `networks/catalog`  | ~20 real ad/offer/survey networks (CPX, BitLabs, Tapjoy, Adjoe, AdGem, Lootably, Monlix, Adscend, RevU, Ayet, AdGate, UndrAds, Notik, TimeWall, Pollfish, AdMob, AppLovin, LevelPlay, InMobi, Meta FAN) with env-driven activation — see [networks.md](networks.md) |
+| `networks/adapters` | Postback dialects: sandboxnet (HMAC-SHA256 + timestamp), BitLabs (HMAC-SHA1 over URL), md5 walls (status 1/2), CPX (md5 of joined params), generic HMAC walls, URL-HMAC (AdMob SSV), unsigned (token + IP allowlist), Pangle-style SSV                              |
+| `networks/service`  | Boot-time catalog sync, member wall listing (geo + reliability), tracked wall sessions (opaque tokens, 30-day resolution), interrupted-session logging                                                                                                              |
+| `postbacks`         | Log-first pipeline: allowlist → parse → verify → replay window → resolve click or wall-session token → credit/reverse; admin replay                                                                                                                                 |
+| `rewards`           | Revenue-share credit, reversals (absorb/clawback), goodwill, native sponsor rewards, auto-donation                                                                                                                                                                  |
+| `claims`            | Missing Credit ladder, approvals/rejections, SLA sweep with auto-approval                                                                                                                                                                                           |
+| `payouts`           | Methods per country, quotes, destinations (encrypted, masked, name enquiry), requests, processing, retries, refunds                                                                                                                                                 |
+| `payouts/providers` | Sandbox rails (latency, outages, failures) and the live Paystack adapter + webhook signature                                                                                                                                                                        |
+| `fraud`             | Explainable signals → score; automatic _pause_ (never automatic ban) at the block threshold                                                                                                                                                                         |
+| `fraud/iprep`       | Optional IPQS reputation lookups (VPN/proxy/datacenter), 24h-cached in `ip_rules`, fail-open                                                                                                                                                                        |
+| `ads`               | Rewarded video: inventory, sessions, event-chain verification, visible-time accounting, earning lock, SSV credit                                                                                                                                                    |
+| `native`            | Quick polls ("while you wait") and earn-and-learn lessons                                                                                                                                                                                                           |
+| `engagement`        | Achievements, tiers, streaks (member's local midnight), leaderboard, earning velocity                                                                                                                                                                               |
+| `referrals`         | Attribution, self-dealing detection, two-sided bonus on qualification, residuals                                                                                                                                                                                    |
+| `support`           | Tickets with SLAs, appeals (lift/uphold), community feature requests                                                                                                                                                                                                |
+| `finance`           | Charity, tax centre, KYC submissions and uploads                                                                                                                                                                                                                    |
+| `transparency`      | Public stats, live payout feed, network reliability, Wall of Shame, status page                                                                                                                                                                                     |
+| `admin`             | Overview, analytics (unit economics + cohorts), members 360°, queues, offers, postbacks, audit, jobs                                                                                                                                                                |
+| `sandbox`           | The simulated outside world: offer network, ad network SSV, identity vendor, dev inbox                                                                                                                                                                              |
 
 ## Money
 

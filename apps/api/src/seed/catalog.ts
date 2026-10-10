@@ -38,28 +38,9 @@ export const SANDBOX_NETWORKS = [
     status: 'active',
     config: {},
   },
-  {
-    id: 'bitlabs',
-    name: 'BitLabs (configure to enable)',
-    adapter: 'bitlabs',
-    kind: 'iframe_wall',
-    status: 'paused',
-    config: {
-      iframeUrlTemplate: 'https://web.bitlabs.ai/?uid={user_id}&token={app_token}',
-      docs: 'https://developer.bitlabs.ai/docs/callbacks',
-    },
-  },
-  {
-    id: 'md5wall',
-    name: 'MD5-style offerwall (configure to enable)',
-    adapter: 'md5wall',
-    kind: 'offerwall',
-    status: 'paused',
-    config: {
-      clickUrlTemplate:
-        'https://wall.example.com/click?offer={network_offer_id}&subId={user_id}&subId2={click_id}',
-    },
-  },
+  // Real networks (BitLabs, CPX Research, Tapjoy, Lootably, …) are NOT seeded here —
+  // the network catalog (modules/networks/catalog.ts) owns them and syncs rows on
+  // every boot, paused until their LUCRUM_NET_* env credentials are set.
 ] as const;
 
 export interface SeedOffer {

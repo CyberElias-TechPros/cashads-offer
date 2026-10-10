@@ -4,3 +4,5 @@ dist
 apps/api/drizzle
 docs/product-spec.md
 package-lock.json
+# Capacitor-copied web build + generated config (build artifacts, gitignored)
+apps/android/android/app/src/main/assets

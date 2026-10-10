@@ -271,14 +271,62 @@ export const ledgerEntries = pgTable(
 export const networks = pgTable('networks', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
-  adapter: text('adapter').$type<'sandboxnet' | 'bitlabs' | 'md5wall' | 'pangle_ssv' | 'native'>().notNull(),
-  kind: text('kind').$type<'offerwall' | 'ads' | 'native' | 'iframe_wall'>().notNull(),
+  adapter: text('adapter')
+    .$type<
+      | 'sandboxnet'
+      | 'bitlabs'
+      | 'md5wall'
+      | 'cpx'
+      | 'hmacq'
+      | 'hmacurl'
+      | 'pangle_ssv'
+      | 'unsigned'
+      | 'native'
+    >()
+    .notNull(),
+  kind: text('kind').$type<'offerwall' | 'ads' | 'native' | 'iframe_wall' | 'survey_wall'>().notNull(),
   secretEnc: text('secret_enc'),
   ipAllowlist: jsonb('ip_allowlist').$type<string[]>().notNull().default([]),
   status: text('status').$type<'active' | 'paused' | 'disabled'>().notNull().default('active'),
   config: jsonb('config').$type<Record<string, unknown>>().notNull().default({}),
   createdAt: createdAt(),
 });
+
+/**
+ * A member opening an external offerwall ("wall session"). The network only ever
+ * sees `sessionToken` as its user id; postbacks carrying that token resolve back
+ * to the user here. Sessions stay resolvable for 30 days so long milestone
+ * tasks (reach level 20…) still credit.
+ */
+export const wallSessions = pgTable(
+  'wall_sessions',
+  {
+    id: id(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    networkId: text('network_id')
+      .notNull()
+      .references(() => networks.id),
+    sessionToken: text('session_token').notNull(),
+    deviceKey: text('device_key'),
+    ip: text('ip'),
+    userAgent: text('user_agent'),
+    status: text('status').$type<'open' | 'closed' | 'interrupted'>().notNull().default('open'),
+    conversions: integer('conversions').notNull().default(0),
+    startedAt: ts('started_at').notNull().defaultNow(),
+    expiresAt: ts('expires_at').notNull(),
+    closedAt: ts('closed_at'),
+    interruptedAt: ts('interrupted_at'),
+    interruption: jsonb('interruption').$type<Record<string, unknown>>(),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex('wall_sessions_token_uq').on(t.sessionToken),
+    index('wall_sessions_user_idx').on(t.userId, t.startedAt),
+    index('wall_sessions_network_idx').on(t.networkId),
+  ],
+);
 
 export const offers = pgTable(
   'offers',
@@ -498,6 +546,8 @@ export const adSessions = pgTable(
       .references(() => adCreatives.id),
     deviceKey: text('device_key').notNull(),
     transId: text('trans_id').notNull(),
+    /** >0 marks a boost video: watching it unlocks extra daily earning slots. */
+    boostSlots: integer('boost_slots').notNull().default(0),
     status: text('status')
       .$type<'created' | 'playing' | 'verifying' | 'rewarded' | 'rejected' | 'expired' | 'abandoned'>()
       .notNull()
@@ -519,6 +569,33 @@ export const adSessions = pgTable(
   (t) => [
     uniqueIndex('ad_sessions_trans_uq').on(t.transId),
     index('ad_sessions_user_idx').on(t.userId, t.createdAt),
+  ],
+);
+
+/**
+ * Earning-rate boosts: extra daily video slots, granted by watching a boost ad
+ * (kind 'ad', one row per boost session) or by a referred friend's first earning
+ * (kind 'referral', one row per referred user). The unique key makes grants
+ * idempotent; expiry is enforced at read time.
+ */
+export const earningBoosts = pgTable(
+  'earning_boosts',
+  {
+    id: id(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    kind: text('kind').$type<'ad' | 'referral'>().notNull(),
+    bonusSlots: integer('bonus_slots').notNull(),
+    /** Boost session id (kind 'ad') or referred user id (kind 'referral'). */
+    sourceRef: text('source_ref').notNull(),
+    startsAt: ts('starts_at').notNull().defaultNow(),
+    expiresAt: ts('expires_at').notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex('earning_boosts_user_kind_source_uq').on(t.userId, t.kind, t.sourceRef),
+    index('earning_boosts_user_active_idx').on(t.userId, t.expiresAt),
   ],
 );
 
@@ -742,6 +819,8 @@ export const ipRules = pgTable('ip_rules', {
   cidr: text('cidr').notNull(),
   kind: text('kind').$type<'datacenter' | 'vpn' | 'shared_ok' | 'blocked'>().notNull(),
   note: text('note'),
+  /** Reputation-cache rows expire; manual admin rules leave this null (never expire). */
+  expiresAt: ts('expires_at'),
   createdAt: createdAt(),
 });
 

@@ -8,6 +8,7 @@ import {
   offerRateSchema,
   offerReportSchema,
   offersQuerySchema,
+  partnerSessionCreateSchema,
   pollAnswerSchema,
 } from '@lucrum/shared';
 import { z } from 'zod';
@@ -17,7 +18,9 @@ import { notFound } from '../lib/errors';
 import {
   completeAdSession,
   createAdSession,
+  createPartnerSession,
   getAdSession,
+  nativeCompleteAdSession,
   nextAd,
   recordAdEvent,
 } from '../modules/ads/service';
@@ -158,6 +161,29 @@ export const earnRoutes: FastifyPluginAsyncZod = async (app) => {
     '/ads/sessions/:id',
     { schema: { tags, summary: 'Video session status', params: id } },
     async (req) => getAdSession(ctx, requireUser(req), req.params.id),
+  );
+  /* partner rewarded video (native SDK networks — Android app) */
+  app.post(
+    '/ads/partner-sessions',
+    {
+      schema: {
+        tags,
+        summary: 'Start a partner-network video session (native SDK; SSV-credited)',
+        body: partnerSessionCreateSchema,
+      },
+    },
+    async (req) => createPartnerSession(ctx, requireActiveUser(req), req.client, req.body.networkId),
+  );
+  app.post(
+    '/ads/partner-sessions/:id/native-complete',
+    {
+      schema: {
+        tags,
+        summary: 'Native SDK finished the video — mark verifying and await the SSV callback',
+        params: id,
+      },
+    },
+    async (req) => nativeCompleteAdSession(ctx, requireActiveUser(req), req.client, req.params.id),
   );
 
   /* missing credit */

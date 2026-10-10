@@ -23,12 +23,15 @@ import { AppError } from './lib/errors';
 import { JobQueue } from './jobs/queue';
 import { registerJobHandlers } from './jobs/handlers';
 import { SettingsStore } from './modules/platform/settings';
+import { WALL_FRAME_HOSTS } from './modules/networks/catalog';
 import { adminRoutes } from './routes/admin';
 import { authRoutes } from './routes/auth';
+import { boostRoutes } from './routes/boosts';
 import { earnRoutes } from './routes/earn';
 import { engageRoutes } from './routes/engage';
 import { integrationRoutes } from './routes/integrations';
 import { meRoutes } from './routes/me';
+import { networkRoutes } from './routes/networks';
 import { publicRoutes } from './routes/public';
 import { sandboxRoutes } from './routes/sandbox';
 import { supportRoutes } from './routes/support';
@@ -135,7 +138,8 @@ export async function buildApp(
             styleSrc: ["'self'", "'unsafe-inline'"],
             scriptSrc: ["'self'"],
             connectSrc: ["'self'"],
-            frameSrc: ["'self'", 'https://web.bitlabs.ai'],
+            // Every embeddable offerwall/survey host from the network catalog.
+            frameSrc: ["'self'", ...WALL_FRAME_HOSTS],
             // Sandbox demos are embedded by preview tools; real deployments only allow same-origin framing.
             frameAncestors: config.SANDBOX_MODE ? ['*'] : ["'self'"],
           },
@@ -247,6 +251,8 @@ export async function buildApp(
   await app.register(engageRoutes, { prefix: '/api' });
   await app.register(supportRoutes, { prefix: '/api' });
   await app.register(adminRoutes, { prefix: '/api/admin' });
+  await app.register(networkRoutes, { prefix: '/api' });
+  await app.register(boostRoutes, { prefix: '/api' });
   await app.register(integrationRoutes, { prefix: '/api' });
   if (config.SANDBOX_MODE) await app.register(sandboxRoutes, { prefix: '/api' });
 

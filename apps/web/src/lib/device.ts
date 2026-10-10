@@ -19,6 +19,24 @@ export function deviceId(): string {
   }
 }
 
+/**
+ * Inside the Android app, adopt the GAID (Advertising ID) as the device id — it is
+ * the identifier ad networks trust for install attribution, and it survives
+ * reinstalls of our WebView data. Respects limit-ad-tracking: when the user opts
+ * out we keep the random id instead.
+ */
+export async function adoptNativeDeviceId(): Promise<void> {
+  try {
+    const { nativeDeviceId } = await import('./native');
+    const info = await nativeDeviceId();
+    if (info?.advertisingId && !info.limitAdTracking && info.source === 'gaid') {
+      localStorage.setItem(KEY, `gaid_${info.advertisingId.replaceAll('-', '')}`);
+    }
+  } catch {
+    /* not native — keep the random id */
+  }
+}
+
 export function deviceFingerprint(): string {
   try {
     return localStorage.getItem(FP_KEY) ?? '';

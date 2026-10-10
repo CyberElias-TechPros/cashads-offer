@@ -4,6 +4,7 @@ import type { DbOrTx } from '../../db/client';
 import { devices, fraudFlags, ipRules, users } from '../../db/schema';
 import { DISPOSABLE_EMAIL_DOMAINS, KNOWN_DATACENTER_CIDRS, ipInCidr, isPrivateIp } from '../../lib/net';
 import { notify } from '../platform/messaging';
+import { lookupIpReputation } from './iprep';
 
 /**
  * Explainable fraud scoring (spec §10). Every point of a member's score comes from
@@ -108,14 +109,20 @@ export function isDisposableEmail(email: string): boolean {
 }
 
 export async function ipKind(
+  ctx: AppContext,
   db: DbOrTx,
   ip: string,
 ): Promise<'datacenter' | 'vpn' | 'shared_ok' | 'blocked' | null> {
   if (!ip || isPrivateIp(ip)) return null;
-  const rules = await db.select().from(ipRules);
+  const rules = (await db.select().from(ipRules)).filter(
+    (r) => r.expiresAt === null || r.expiresAt > new Date(),
+  );
   const hit = rules.find((r) => ipInCidr(ip, r.cidr));
   if (hit) return hit.kind;
   if (KNOWN_DATACENTER_CIDRS.some((c) => ipInCidr(ip, c))) return 'datacenter';
+  // Local rules miss — ask the reputation provider (IPQS) when configured.
+  const reputation = await lookupIpReputation(ctx, ip);
+  if (reputation) return reputation;
   return null;
 }
 
@@ -149,7 +156,7 @@ export async function evaluateSignup(
   if (shared.length > 0)
     await recordSignal(ctx, db, user.id, 'shared_device', { otherAccounts: shared.slice(0, 10) });
   if (settings.fraudIpSignals) {
-    const kind = await ipKind(db, client.ip);
+    const kind = await ipKind(ctx, db, client.ip);
     if (kind === 'datacenter' || kind === 'vpn')
       await recordSignal(ctx, db, user.id, 'datacenter_ip', { ip: client.ip, kind });
     if (kind !== 'shared_ok' && !isPrivateIp(client.ip)) {

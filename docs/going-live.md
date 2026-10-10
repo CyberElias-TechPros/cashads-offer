@@ -35,24 +35,43 @@ METRICS_TOKEN=<random>
 
 ## 3. Offer networks
 
-Apply to offerwall networks that **allow incentivised traffic** (e.g. AdGate Media, BitLabs, CPX Research,
-TheoremReach, Lootably, AyeT-Studios). For each approved network:
+The **network catalog** (`apps/api/src/modules/networks/catalog.ts`) ships with ~20 offerwall, survey and
+rewarded-video networks (CPX Research, BitLabs, Tapjoy, Adjoe, AdGem, Lootably, Monlix, Adscend, RevU, Ayet,
+AdGate/Torox, UndrAds, Notik, TimeWall, Pollfish, AdMob, AppLovin, LevelPlay, InMobi, Meta FAN). See
+**[docs/networks.md](networks.md)** for the full table. Going live is configuration, not code:
 
-1. **Pick or write an adapter** in `apps/api/src/modules/networks/adapters.ts`:
-   - `bitlabs` — HEX HMAC-SHA1 of the full callback URL appended as `&hash=` (BitLabs docs).
-   - `md5wall` — `signature = md5(subId + transId + reward + secret)`, `status` 1 = credit, 2 = chargeback (the common
-     Primewall/Elitewall-style dialect).
-   - New dialect? Implement `verify`, `parse`, `respond` (and optionally `checkConversion` if the network exposes a
-     conversion-status API — it powers instant Missing Credit resolution).
-2. **Insert/activate the network row** (`networks` table): `adapter`, `kind`, encrypted `secret_enc`, and
-   `config.clickUrlTemplate` with `{click_id}`, `{user_id}`, `{network_offer_id}` placeholders. Our click id travels as
-   the network sub-id — that’s what makes cross-device credit and claims work.
-3. **Configure the postback URL** in the network dashboard: `https://your-domain/api/postback/<networkId>?…` using the
-   network’s macros, and add the network’s server IPs to **Admin → Networks → IP allowlist**.
-4. **Import offers** (per-offer API feeds) into `offers` or embed iframe walls (`kind: 'iframe_wall'`,
+1. **Set the network's env credentials** (`LUCRUM_NET_<NAME>_SECRET` + app id/token — see `.env.example`).
+   On the next boot the catalog sync activates the network automatically. Until then it sits in
+   **Admin → Networks** as `paused` with the exact env var names shown.
+2. **Configure the postback URL** in the network dashboard: `https://your-domain/api/postback/<networkId>`
+   (rewarded-video SSV networks: `https://your-domain/api/ssv/<networkId>`), and add the network’s server IPs to
+   **Admin → Networks → IP allowlist** (mandatory for `unsigned` networks).
+3. **Verify the wall URL template** by opening the wall as a member from the Earn page.
+4. Watch **Admin → Postback logs** during the first conversions; use **Replay** after fixing configuration.
+
+To connect a network that is **not** in the catalog yet:
+
+1. **Pick or write an adapter** in `apps/api/src/modules/networks/adapters.ts` (dialects: `bitlabs`, `md5wall`,
+   `cpx`, `hmacq`, `hmacurl`, `pangle_ssv`, `unsigned`). Implement `verify`, `parse`, `respond` (and optionally
+   `checkConversion` if the network exposes a conversion-status API — it powers instant Missing Credit resolution).
+2. **Add a catalog entry** in `catalog.ts` (adapter, kind, env vars, wall URL template, regions).
+3. **Import offers** (per-offer API feeds) into `offers` or embed iframe walls (`kind: 'iframe_wall'`,
    `config.iframeUrlTemplate`). Set countries, estimated minutes, data usage and pay speed honestly — the measured
    medians take over after five completions.
-5. Watch **Admin → Postback logs** during the first conversions; use **Replay** after fixing configuration.
+
+## 3b. Rate monetization (earning boosts)
+
+The **earning-rate boost** system monetizes how fast members can earn — no payment rails needed:
+
+- **Ad-funded boost** — a member watches one video (a real partner-network ad on Android via the
+  native SDKs, an in-app video on the web) and unlocks `boostSlotsPerAd` extra daily video slots.
+  The ad impression is paid by the ad networks, so the boost monetizes through inventory you already sell.
+- **Referral boost** — when a referred friend completes their first earning, the referrer gets
+  `boostReferralSlots` extra slots/day for `boostReferralDays` days.
+
+Slots are granted **only** when the boost video's signed SSV reward lands (server-side), stack up to
+`boostMaxBonusSlots`, and reset at midnight UTC (ad boosts) or after their window (referral boosts).
+Tune all five knobs in **Admin → Settings**. Members see the boost card on the Videos page.
 
 ## 4. Payout providers
 
@@ -77,7 +96,9 @@ The provider interface lives in `apps/api/src/modules/payouts/providers.ts`
 - **SMS OTP:** wire `sendSms()` to Termii / Africa’s Talking / Twilio; keep the per-hour limits.
 - **KYC:** replace the sandbox reviewer (`sandbox.kyc_review` job) with a vendor (Smile ID, Youverify, Dojah) and keep
   documents in private object storage (swap `storeUpload()` to S3/GCS with server-side encryption).
-- **IP intelligence:** feed `ipKind()` from MaxMind minFraud / IPQS / ipinfo and enable `fraudIpSignals`.
+- **IP intelligence:** set `IPQS_API_KEY` (IP Quality Score) to enable live VPN/proxy/datacenter detection at
+  sign-up and wall-open (`modules/fraud/iprep.ts`, cached 24h per IP, fails open), and keep `fraudIpSignals` enabled.
+  Alternatively seed `ip_rules` manually in Admin for MaxMind/ipinfo exports.
 - **Uploads:** `UPLOAD_DIR` must be persistent storage (or object storage) — never the container filesystem.
 
 ## 6. Launch checklist (spec §14.9)

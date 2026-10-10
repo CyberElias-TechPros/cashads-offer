@@ -47,6 +47,12 @@ const schema = z.object({
   DEMO_PASSWORD: z.string().default('Demo-earner-2026'),
   /** Optional real payout provider — enables the Paystack adapter for NG bank payouts. */
   PAYSTACK_SECRET_KEY: z.string().optional(),
+  /**
+   * Optional IP reputation provider (IP Quality Score). Enables live VPN / proxy /
+   * datacenter detection at sign-up and at the earning entry points. Without it,
+   * only the built-in datacenter CIDR list and admin IP rules apply.
+   */
+  IPQS_API_KEY: z.string().optional(),
 });
 
 export type Config = z.infer<typeof schema> & { isProd: boolean; isTest: boolean };

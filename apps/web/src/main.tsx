@@ -5,7 +5,7 @@ import { RouterProvider } from 'react-router';
 import { Celebrations, Toaster } from './components/feedback';
 import { PageSpinner } from './components/layouts';
 import { ApiError } from './lib/api';
-import { computeFingerprint } from './lib/device';
+import { adoptNativeDeviceId, computeFingerprint } from './lib/device';
 import { router } from './router';
 import './index.css';
 
@@ -22,6 +22,9 @@ const queryClient = new QueryClient({
 });
 
 void computeFingerprint();
+// Inside the Android app, adopt the GAID as device id before the first API call
+// (bounded wait — never delay app start on the bridge).
+void Promise.race([adoptNativeDeviceId(), new Promise((r) => setTimeout(r, 400))]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
